@@ -17,7 +17,8 @@ func ConnectDB(appConfig AppConfig) {
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		panic("Tidak dapat terhubung ke database")
+		panic("Tidak dapat terhubung ke database" + dsn)
+
 	}
 
 }
