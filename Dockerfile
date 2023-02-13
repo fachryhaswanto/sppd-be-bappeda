@@ -35,7 +35,7 @@ COPY --from=builder /app/main .
 COPY --from=builder /app/.env .  
 
 # Expose port 80 to the outside world
-EXPOSE 8080
+EXPOSE 80
 
 #Command to run the executable
 CMD ["./main"]
