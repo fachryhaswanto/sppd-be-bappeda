@@ -21,6 +21,7 @@ func main() {
 		log.Fatal("Terdapat kesalahan memuat file .env")
 	}
 
+	appConfig.DatabaseHost = os.Getenv("APP_DATABASE_HOST")
 	appConfig.DatabaseUsername = os.Getenv("APP_DATABASE_USERNAME")
 	appConfig.DatabasePassword = os.Getenv("APP_DATABASE_PASSWORD")
 	appConfig.DatabasePort = os.Getenv("APP_DATABASE_PORT")
@@ -75,7 +76,7 @@ func main() {
 	server.MaxMultipartMemory = 5 << 20
 
 	server.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"http://" + os.Getenv("APP_ALLOW_ORIGINS")},
+		AllowOrigins: []string{"https://" + os.Getenv("APP_ALLOW_ORIGINS")},
 		AllowMethods: []string{"POST", "PUT", "DELETE", "GET", "PATCH"},
 		AllowHeaders: []string{"Content-Type, access-control-allow-origin, access-control-allow-headers"},
 	}))
