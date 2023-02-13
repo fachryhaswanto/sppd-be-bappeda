@@ -21,11 +21,11 @@ func main() {
 		log.Fatal("Terdapat kesalahan memuat file .env")
 	}
 
-	appConfig.DatabaseHost = os.Getenv("APP_DATABASE_HOST")
-	appConfig.DatabaseUsername = os.Getenv("APP_DATABASE_USERNAME")
-	appConfig.DatabasePassword = os.Getenv("APP_DATABASE_PASSWORD")
-	appConfig.DatabasePort = os.Getenv("APP_DATABASE_PORT")
-	appConfig.DatabaseName = os.Getenv("APP_DATABASE_NAME")
+	// appConfig.DatabaseHost = os.Getenv("APP_DATABASE_HOST")
+	appConfig.DatabaseURL = os.Getenv("DATABASE_URL")
+	// appConfig.DatabasePassword = os.Getenv("APP_DATABASE_PASSWORD")
+	// appConfig.DatabasePort = os.Getenv("APP_DATABASE_PORT")
+	// appConfig.DatabaseName = os.Getenv("APP_DATABASE_NAME")
 	appConfig.AllowOrigins = os.Getenv("APP_ALLOW_ORIGIN")
 	appConfig.AppPort = os.Getenv("APP_PORT")
 
