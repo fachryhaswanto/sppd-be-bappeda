@@ -63,20 +63,20 @@ func main() {
 	var subKegiatanService = service.NewSubKegiatanService(subKegiatanRepository)
 	var subKegiatanController = controller.NewSubKegiatanController(subKegiatanService)
 
-	var sptRepository = repository.NewSptRepository(config.DB)
-	var sptService = service.NewSptService(sptRepository)
-	var sptController = controller.NewSptController(sptService)
-
 	var sppdRepository = repository.NewSppdRepository(config.DB)
 	var sppdService = service.NewSppdService(sppdRepository)
 	var sppdController = controller.NewSppdController(sppdService)
+
+	var sptRepository = repository.NewSptRepository(config.DB)
+	var sptService = service.NewSptService(sptRepository)
+	var sptController = controller.NewSptController(sptService, sppdService)
 
 	var server = gin.Default()
 
 	server.MaxMultipartMemory = 5 << 20
 
 	server.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"https://" + os.Getenv("APP_ALLOW_ORIGINS")},
+		AllowOrigins: []string{"https://" + os.Getenv("APP_ALLOW_ORIGINS"), "http://localhost:3000"},
 		AllowMethods: []string{"POST", "PUT", "DELETE", "GET", "PATCH"},
 		AllowHeaders: []string{"Content-Type, access-control-allow-origin, access-control-allow-headers"},
 	}))
@@ -137,7 +137,6 @@ func main() {
 	server.GET("/sppd/", sppdController.GetSppds)
 	server.GET("/join", sppdController.GetJoin)
 	server.GET("/sppd/:id", sppdController.GetSppd)
-	server.POST("/sppd", sppdController.CreateSppd)
 	server.PATCH("/sppd/:id", sppdController.UpdateSppd)
 	server.DELETE("/sppd/:id", sppdController.DeleteSppd)
 

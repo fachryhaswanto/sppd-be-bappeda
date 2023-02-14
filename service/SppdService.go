@@ -10,7 +10,7 @@ type SppdService interface {
 	FindAll() ([]model.Sppd, error)
 	FindJoin() ([]model.JoinSppdSpt, error)
 	FindById(id int) (model.Sppd, error)
-	Create(sppd request.CreateSppdRequest) (model.Sppd, error)
+	Create(sppd model.Sppd) (model.Sppd, error)
 	Update(id int, sppd request.UpdateSppdRequest) (model.Sppd, error)
 	Delete(id int) (model.Sppd, error)
 }
@@ -41,15 +41,7 @@ func (s *sppdService) FindById(id int) (model.Sppd, error) {
 	return sppd, err
 }
 
-func (s *sppdService) Create(sppdRequest request.CreateSppdRequest) (model.Sppd, error) {
-	var sppd = model.Sppd{
-		Template_Sppd: sppdRequest.Template_Sppd,
-		Nomor_Sppd:    sppdRequest.Nomor_Sppd,
-		Tanggal_Sppd:  sppdRequest.Tanggal_Sppd,
-		Tingkat_Biaya: sppdRequest.Tingkat_Biaya,
-		Instansi:      sppdRequest.Instansi,
-		Tanda_Tangan:  sppdRequest.Tanda_tangan,
-	}
+func (s *sppdService) Create(sppd model.Sppd) (model.Sppd, error) {
 
 	newSppd, err := s.sppdRepository.Create(sppd)
 

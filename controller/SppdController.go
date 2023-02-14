@@ -74,36 +74,36 @@ func (c *sppdController) GetSppd(cntx *gin.Context) {
 	cntx.JSON(http.StatusOK, sppdResponse)
 }
 
-func (c *sppdController) CreateSppd(cntx *gin.Context) {
-	var sppdRequest request.CreateSppdRequest
+// func (c *sppdController) CreateSppd(cntx *gin.Context) {
+// 	var sppdRequest request.CreateSppdRequest
 
-	var err = cntx.ShouldBindJSON(&sppdRequest)
-	if err != nil {
-		var errorMessages = []string{}
+// 	var err = cntx.ShouldBindJSON(&sppdRequest)
+// 	if err != nil {
+// 		var errorMessages = []string{}
 
-		for _, e := range err.(validator.ValidationErrors) {
-			var errorMessage = fmt.Sprintf("Error on field %s, condition : %s", e.Field(), e.ActualTag())
-			errorMessages = append(errorMessages, errorMessage)
-		}
+// 		for _, e := range err.(validator.ValidationErrors) {
+// 			var errorMessage = fmt.Sprintf("Error on field %s, condition : %s", e.Field(), e.ActualTag())
+// 			errorMessages = append(errorMessages, errorMessage)
+// 		}
 
-		cntx.JSON(http.StatusBadRequest, gin.H{
-			"error": errorMessages,
-		})
-		return
-	}
+// 		cntx.JSON(http.StatusBadRequest, gin.H{
+// 			"error": errorMessages,
+// 		})
+// 		return
+// 	}
 
-	sppd, err := c.sppdService.Create(sppdRequest)
-	if err != nil {
-		cntx.JSON(http.StatusBadRequest, gin.H{
-			"error": cntx.Error(err),
-		})
-		return
-	}
+// 	sppd, err := c.sppdService.Create(sppdRequest)
+// 	if err != nil {
+// 		cntx.JSON(http.StatusBadRequest, gin.H{
+// 			"error": cntx.Error(err),
+// 		})
+// 		return
+// 	}
 
-	cntx.JSON(http.StatusCreated, gin.H{
-		"data": sppd,
-	})
-}
+// 	cntx.JSON(http.StatusCreated, gin.H{
+// 		"data": sppd,
+// 	})
+// }
 
 func (c *sppdController) UpdateSppd(cntx *gin.Context) {
 	var sppdRequest request.UpdateSppdRequest

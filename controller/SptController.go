@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"sppd/helper"
+	"sppd/model"
 	"sppd/request"
 	"sppd/responses"
 	"sppd/service"
@@ -15,11 +16,15 @@ import (
 )
 
 type sptController struct {
-	sptService service.SptService
+	sptService  service.SptService
+	sppdService service.SppdService
 }
 
-func NewSptController(sptService service.SptService) *sptController {
-	return &sptController{sptService}
+func NewSptController(sptService service.SptService, sppdService service.SppdService) *sptController {
+	return &sptController{
+		sptService,
+		sppdService,
+	}
 }
 
 func (c *sptController) GetSpts(cntx *gin.Context) {
@@ -101,6 +106,11 @@ func (c *sptController) CreateSpt(cntx *gin.Context) {
 		})
 		return
 	}
+
+	var sppd model.Sppd
+	sppd.Idspt = spt.Id
+
+	_, err = c.sppdService.Create(sppd)
 
 	cntx.JSON(http.StatusCreated, gin.H{
 		"data": spt,
