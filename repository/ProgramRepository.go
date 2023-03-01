@@ -38,15 +38,14 @@ func (r *programRepository) FindById(id int) (model.Program, error) {
 	return program, err
 }
 
-func (r *programRepository) Create(progam model.Program) (model.Program, error) {
-	var err = r.db.Create(&progam).Error
+func (r *programRepository) Create(program model.Program) (model.Program, error) {
+	var err = r.db.Create(&program).Error
 
-	return progam, err
+	return program, err
 }
 
 func (r *programRepository) Update(program model.Program) (model.Program, error) {
 	var err = r.db.Model(&program).Updates(model.Program{
-		Tahun:      program.Tahun,
 		Kode:       program.Kode,
 		Pembebanan: program.Pembebanan,
 		Program:    program.Program,

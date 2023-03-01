@@ -3,7 +3,6 @@ package controller
 import (
 	"fmt"
 	"net/http"
-	"os"
 	"sppd/helper"
 	"sppd/model"
 	"sppd/request"
@@ -111,6 +110,12 @@ func (c *sptController) CreateSpt(cntx *gin.Context) {
 	sppd.Idspt = spt.Id
 
 	_, err = c.sppdService.Create(sppd)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+		return
+	}
 
 	cntx.JSON(http.StatusCreated, gin.H{
 		"data": spt,
@@ -167,8 +172,8 @@ func (c *sptController) DeleteSpt(cntx *gin.Context) {
 		"status": "Data berhasil dihapus",
 	})
 
-	var e = os.Remove("./documents/" + idString + ".pdf")
-	if e != nil {
-		return
-	}
+	// var e = os.Remove("./documents/" + idString + ".pdf")
+	// if e != nil {
+	// 	return
+	// }
 }

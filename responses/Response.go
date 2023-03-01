@@ -63,10 +63,17 @@ type PegawaiByNameResponse struct {
 
 type ProgramResponse struct {
 	Id         int    `json:"id"`
-	Tahun      string `json:"tahun"`
 	Kode       string `json:"kode"`
 	Pembebanan string `json:"pembebanan"`
 	Program    string `json:"program"`
+}
+
+type KegiatanResponse struct {
+	Id           int             `json:"id"`
+	ProgramId    int             `json:"programId"`
+	Program      ProgramResponse `json:"program"`
+	KodeKegiatan string          `json:"kodeKegiatan"`
+	NamaKegiatan string          `json:"namaKegiatan"`
 }
 
 type SubKegiatanResponse struct {

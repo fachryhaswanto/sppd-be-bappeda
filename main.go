@@ -21,11 +21,11 @@ func main() {
 		log.Fatal("Terdapat kesalahan memuat file .env")
 	}
 
-	// appConfig.DatabaseHost = os.Getenv("APP_DATABASE_HOST")
-	appConfig.DatabaseURL = os.Getenv("DATABASE_URL")
-	// appConfig.DatabasePassword = os.Getenv("APP_DATABASE_PASSWORD")
-	// appConfig.DatabasePort = os.Getenv("APP_DATABASE_PORT")
-	// appConfig.DatabaseName = os.Getenv("APP_DATABASE_NAME")
+	appConfig.DatabaseHost = os.Getenv("APP_DATABASE_HOST")
+	// appConfig.DatabaseURL = os.Getenv("DATABASE_URL")
+	appConfig.DatabasePassword = os.Getenv("APP_DATABASE_PASSWORD")
+	appConfig.DatabasePort = os.Getenv("APP_DATABASE_PORT")
+	appConfig.DatabaseName = os.Getenv("APP_DATABASE_NAME")
 	appConfig.AllowOrigins = os.Getenv("APP_ALLOW_ORIGIN")
 	appConfig.AppPort = os.Getenv("APP_PORT")
 
@@ -58,6 +58,10 @@ func main() {
 	var programRepository = repository.NewProgramRepository(config.DB)
 	var programService = service.NewProgramService(programRepository)
 	var programController = controller.NewProgramController(programService)
+
+	var kegiatanRepository = repository.NewKegiatanRepository(config.DB)
+	var kegiatanService = service.NewKegiatanService(kegiatanRepository)
+	var kegiatanController = controller.NewKegiatanController(kegiatanService)
 
 	var subKegiatanRepository = repository.NewSubKegiatanRepository(config.DB)
 	var subKegiatanService = service.NewSubKegiatanService(subKegiatanRepository)
@@ -120,6 +124,12 @@ func main() {
 	server.POST("/program", programController.CreateProgram)
 	server.PATCH("/program/:id", programController.UpdateProgram)
 	server.DELETE("/program/:id", programController.DeleteProgram)
+
+	server.GET("/kegiatan", kegiatanController.GetKegiatans)
+	server.GET("/kegiatan/:id", kegiatanController.GetKegiatan)
+	server.POST("/kegiatan", kegiatanController.CreateKegiatan)
+	server.PATCH("/kegiatan/:id", kegiatanController.UpdateKegiatan)
+	server.DELETE("/kegiata/:id", kegiatanController.DeleteKegiatan)
 
 	server.GET("/subkegiatan", subKegiatanController.GetSubKegiatans)
 	server.GET("/subkegiatan/:id", subKegiatanController.GetSubKegiatan)

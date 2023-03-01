@@ -94,10 +94,24 @@ func ConvertToPegawaiByNameResponse(p model.Pegawai) responses.PegawaiByNameResp
 func ConvertToProgramResponse(p model.Program) responses.ProgramResponse {
 	return responses.ProgramResponse{
 		Id:         p.Id,
-		Tahun:      p.Tahun,
 		Kode:       p.Kode,
 		Pembebanan: p.Pembebanan,
 		Program:    p.Program,
+	}
+}
+
+func ConvertToKegiatanResponse(k model.Kegiatan) responses.KegiatanResponse {
+	return responses.KegiatanResponse{
+		Id:        k.Id,
+		ProgramId: k.ProgramId,
+		Program: responses.ProgramResponse{
+			Id:         k.Program.Id,
+			Kode:       k.Program.Kode,
+			Pembebanan: k.Program.Pembebanan,
+			Program:    k.Program.Program,
+		},
+		KodeKegiatan: k.KodeKegiatan,
+		NamaKegiatan: k.NamaKegiatan,
 	}
 }
 

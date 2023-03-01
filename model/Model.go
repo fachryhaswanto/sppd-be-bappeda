@@ -54,10 +54,17 @@ type Pegawai struct {
 
 type Program struct {
 	Id         int    `gorm:"column:id;primaryKey;not null;autoIncrement"`
-	Tahun      string `gorm:"column:tahun;not null"`
 	Kode       string `gorm:"column:kode;not null"`
 	Pembebanan string `gorm:"column:pembebanan;not null"`
 	Program    string `gorm:"column:program;not null"`
+}
+
+type Kegiatan struct {
+	Id           int `gorm:"column:id;primaryKey;not null;autoIncrement"`
+	ProgramId    int `gorm:"column:programId;not null"`
+	Program      Program
+	KodeKegiatan string `gorm:"column:kodeKegiatan;not null"`
+	NamaKegiatan string `gorm:"column:namaKegiatan;not null"`
 }
 
 type Sub_Kegiatan struct {
