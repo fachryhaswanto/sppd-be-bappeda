@@ -1,5 +1,7 @@
 package responses
 
+import "time"
+
 type UserResponse struct {
 	Id       int    `json:"id"`
 	Username string `json:"username"`
@@ -37,19 +39,22 @@ type PejabatResponse struct {
 }
 
 type PegawaiResponse struct {
-	Id            int    `json:"id"`
-	Nip           string `json:"nip"`
-	Nama          string `json:"nama"`
-	Jenis_Kelamin string `json:"jenis_kelamin"`
-	Status        string `json:"status"`
-	Tempat_Lahir  string `json:"tempat_lahir"`
-	Tanggal_Lahir string `json:"tanggal_lahir"`
-	Instansi      string `json:"instansi"`
-	Bidang        string `json:"bidang"`
-	Golongan      string `json:"golongan"`
-	Eselon        string `json:"eselon"`
-	Pangkat       string `json:"pangkat"`
-	Jabatan       string `json:"jabatan"`
+	Id               int            `json:"id"`
+	Nip              string         `json:"nip"`
+	Nama             string         `json:"nama"`
+	Jenis_Kelamin    string         `json:"jenis_kelamin"`
+	Status           string         `json:"status"`
+	Tempat_Lahir     string         `json:"tempat_lahir"`
+	Tanggal_Lahir    string         `json:"tanggal_lahir"`
+	Instansi         string         `json:"instansi"`
+	BidangId         int            `json:"bidangId"`
+	Bidang           BidangResponse `json:"bidang"`
+	Golongan         string         `json:"golongan"`
+	Eselon           string         `json:"eselon"`
+	Pangkat          string         `json:"pangkat"`
+	Jabatan          string         `json:"jabatan"`
+	StatusPerjalanan string         `json:"statusPerjalanan"`
+	UserId           int            `json:"userId"`
 }
 
 type PegawaiByNameResponse struct {
@@ -77,64 +82,80 @@ type KegiatanResponse struct {
 }
 
 type SubKegiatanResponse struct {
+	Id              int              `json:"id"`
+	KegiatanId      int              `json:"kegiatanId"`
+	Kegiatan        KegiatanResponse `json:"kegiatan"`
+	KodeSubKegiatan string           `json:"kodeSubKegiatan"`
+	NamaSubKegiatan string           `json:"namaSubKegiatan"`
+	PejabatId       int              `json:"pejabatId"`
+	Pejabat         PejabatResponse  `json:"pejabat"`
+}
+
+type RekeningResponse struct {
 	Id           int    `json:"id"`
-	Tahun        string `json:"tahun"`
-	Nama_Program string `json:"nama_program"`
-	Kode         string `json:"kode"`
-	Kegiatan     string `json:"kegiatan"`
+	KodeRekening string `json:"kodeRekening"`
+	NamaRekening string `json:"namaRekening"`
 }
 
 type SptResponse struct {
-	Id                int    `json:"id"`
-	Template          string `json:"template"`
-	Nomor_Spt         string `json:"nomor_spt"`
-	Tanggal_Spt       string `json:"tanggal_spt"`
-	Ditugaskan        string `json:"ditugaskan"`
-	Jenis_Perjalanan  string `json:"jenis_perjalanan"`
-	Keperluan         string `json:"keperluan"`
-	Alat_Angkutan     string `json:"alat_angkutan"`
-	Tempat_Berangkat  string `json:"tempat_berangkat"`
-	Tempat_Tujuan     string `json:"tempat_tujuan"`
-	Tanggal_Berangkat string `json:"tanggal_berangkat"`
-	Tanggal_Kembali   string `json:"tanggal_kembali"`
-	Lama_Perjalanan   string `json:"lama_perjalanan"`
-	Pejabat_Pemberi   string `json:"pejabat_pemberi"`
-	File_Surat_Tugas  string `json:"file_surat_tugas"`
-	Status            string `json:"status"`
+	Id                int                 `json:"id"`
+	Jenis             string              `json:"jenis"`
+	Template          string              `json:"template"`
+	SubKegiatanId     int                 `json:"subKegiatanId"`
+	SubKegiatan       SubKegiatanResponse `json:"subKegiatan"`
+	Nomor_Spt         string              `json:"nomor_spt"`
+	Tanggal_Spt       string              `json:"tanggal_spt"`
+	RekeningId        int                 `json:"rekeningId"`
+	Rekening          RekeningResponse    `json:"rekening"`
+	Keperluan         string              `json:"keperluan"`
+	Tanggal_Berangkat string              `json:"tanggal_berangkat"`
+	Tanggal_Kembali   string              `json:"tanggal_kembali"`
+	Lama_Perjalanan   string              `json:"lama_perjalanan"`
+	Pejabat_Pemberi   string              `json:"pejabat_pemberi"`
+	Status            string              `json:"status"`
+	StatusSppd        int                 `json:"statusSppd"`
+	File_Surat_Tugas  string              `json:"file_surat_tugas"`
+	UserId            int                 `json:"userId"`
 }
 
 type SppdResponse struct {
-	Id            int    `json:"id"`
-	Template_Sppd string `json:"template_sppd"`
-	Nomor_Sppd    string `json:"nomor_sppd"`
-	Tanggal_Sppd  string `json:"tanggal_sppd"`
-	Tingkat_Biaya string `json:"tingkat_biaya"`
-	Instansi      string `json:"instansi"`
-	Tanda_Tangan  string `json:"tanda_tangan"`
-	Idspt         int    `json:"idspt"`
+	Id               int             `json:"id"`
+	Template_Sppd    string          `json:"template_sppd"`
+	Jenis            string          `json:"jenis"`
+	Nomor_Sppd       string          `json:"nomor_sppd"`
+	PegawaiId        int             `json:"pegawaiId"`
+	Pegawai          PegawaiResponse `json:"pegawai"`
+	Tanggal_Sppd     string          `json:"tanggal_sppd"`
+	Tempat_Berangkat string          `json:"tempat_berangkat"`
+	Tempat_Tujuan    string          `json:"tempat_tujuan"`
+	Alat_Angkutan    string          `json:"alat_angkutan"`
+	Instansi         string          `json:"instansi"`
+	PejabatId        int             `json:"pejabatId"`
+	Pejabat          PejabatResponse `json:"pejabat"`
+	SptId            int             `json:"sptId"`
+	Spt              SptResponse     `json:"spt"`
+	UserId           int             `json:"userId"`
 }
 
-type JoinResponse struct {
-	Id                int    `json:"id"`
-	Template_Sppd     string `json:"template_sppd"`
-	Ditugaskan        string `json:"ditugaskan"`
-	Nomor_Sppd        string `json:"nomor_sppd"`
-	Tanggal_Sppd      string `json:"tanggal_sppd"`
-	Tingkat_Biaya     string `json:"tingkat_biaya"`
-	Instansi          string `json:"instansi"`
-	Tanda_Tangan      string `json:"tanda_tangan"`
-	Nomor_Spt         string `json:"nomor_spt"`
-	Tanggal_Spt       string `json:"tanggal_spt"`
-	Jenis_Perjalanan  string `json:"jenis_perjalanan"`
-	Keperluan         string `json:"keperluan"`
-	Alat_Angkutan     string `json:"alat_angkutan"`
-	Tempat_Berangkat  string `json:"tempat_berangkat"`
-	Tempat_Tujuan     string `json:"tempat_tujuan"`
-	Tanggal_Berangkat string `json:"tanggal_berangkat"`
-	Tanggal_Kembali   string `json:"tanggal_kembali"`
-	Lama_Perjalanan   string `json:"lama_perjalanan"`
-	Pejabat_Pemberi   string `json:"pejabat_pemberi"`
-	Status            string `json:"status"`
+type DataDitugaskanResponse struct {
+	Id         int             `json:"id"`
+	SptId      int             `json:"sptId"`
+	Spt        SptResponse     `json:"spt"`
+	PegawaiId  int             `json:"pegawaiId"`
+	Pegawai    PegawaiResponse `json:"pegawai"`
+	StatusSppd int             `json:"statusSppd"`
+	CreatedAt  time.Time       `json:"createdAt"`
+	UpdatedAt  time.Time       `json:"updatedAt"`
+}
+
+type DataPengikutResponse struct {
+	Id        int             `json:"id"`
+	SptId     int             `json:"sptId"`
+	Spt       SptResponse     `json:"spt"`
+	PegawaiId int             `json:"pegawaiId"`
+	Pegawai   PegawaiResponse `json:"pegawai"`
+	CreatedAt time.Time       `json:"createdAt"`
+	UpdatedAt time.Time       `json:"updatedAt"`
 }
 
 type SemuaNamaDitugaskan struct {

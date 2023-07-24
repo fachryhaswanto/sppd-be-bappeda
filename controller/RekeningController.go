@@ -13,37 +13,37 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
-type kegiatanController struct {
-	kegiatanService service.KegiatanService
+type rekeningController struct {
+	rekeningService service.RekeningService
 }
 
-func NewKegiatanController(kegiatanService service.KegiatanService) *kegiatanController {
-	return &kegiatanController{kegiatanService}
+func NewRekeningController(rekeningService service.RekeningService) *rekeningController {
+	return &rekeningController{rekeningService}
 }
 
-func (c *kegiatanController) GetKegiatans(cntx *gin.Context) {
-	var kegiatans, err = c.kegiatanService.FindAll()
+func (c *rekeningController) GetRekenings(cntx *gin.Context) {
+	var rekenings, err = c.rekeningService.FindAll()
 	if err != nil {
 		cntx.JSON(http.StatusBadRequest, gin.H{
 			"error": cntx.Error(err),
 		})
 	}
 
-	var kegiatansResponse []responses.KegiatanResponse
+	var rekeningsResponse []responses.RekeningResponse
 
-	for _, kegiatan := range kegiatans {
-		var kegiatanResponse = helper.ConvertToKegiatanResponse(kegiatan)
-		kegiatansResponse = append(kegiatansResponse, kegiatanResponse)
+	for _, rekening := range rekenings {
+		var rekeningResponse = helper.ConvertToRekeningResponse(rekening)
+		rekeningsResponse = append(rekeningsResponse, rekeningResponse)
 	}
 
-	cntx.JSON(http.StatusOK, kegiatansResponse)
+	cntx.JSON(http.StatusOK, rekeningsResponse)
 }
 
-func (c *kegiatanController) GetKegiatan(cntx *gin.Context) {
+func (c *rekeningController) GetRekening(cntx *gin.Context) {
 	var idString = cntx.Param("id")
 	var id, _ = strconv.Atoi(idString)
 
-	var kegiatan, err = c.kegiatanService.FindById(id)
+	var rekening, err = c.rekeningService.FindById(id)
 	if err != nil {
 		cntx.JSON(http.StatusBadRequest, gin.H{
 			"error": "Data tidak ditemukan",
@@ -51,15 +51,15 @@ func (c *kegiatanController) GetKegiatan(cntx *gin.Context) {
 		return
 	}
 
-	var kegiatanResponse = helper.ConvertToKegiatanResponse(kegiatan)
+	var rekeningResponse = helper.ConvertToRekeningResponse(rekening)
 
-	cntx.JSON(http.StatusOK, kegiatanResponse)
+	cntx.JSON(http.StatusOK, rekeningResponse)
 }
 
-func (c *kegiatanController) CreateKegiatan(cntx *gin.Context) {
-	var kegiatanRequest request.CreateKegiatanRequest
+func (c *rekeningController) CreateRekening(cntx *gin.Context) {
+	var rekeningRequest request.CreateRekeningRequest
 
-	var err = cntx.ShouldBindJSON(&kegiatanRequest)
+	var err = cntx.ShouldBindJSON(&rekeningRequest)
 	if err != nil {
 		var errorMessages = []string{}
 
@@ -74,7 +74,7 @@ func (c *kegiatanController) CreateKegiatan(cntx *gin.Context) {
 		return
 	}
 
-	kegiatan, err := c.kegiatanService.Create(kegiatanRequest)
+	rekening, err := c.rekeningService.Create(rekeningRequest)
 	if err != nil {
 		cntx.JSON(http.StatusBadRequest, gin.H{
 			"error": cntx.Error(err),
@@ -82,15 +82,15 @@ func (c *kegiatanController) CreateKegiatan(cntx *gin.Context) {
 		return
 	}
 
-	var kegiatanResponse = helper.ConvertToKegiatanResponse(kegiatan)
+	var rekeningResponse = helper.ConvertToRekeningResponse(rekening)
 
-	cntx.JSON(http.StatusCreated, kegiatanResponse)
+	cntx.JSON(http.StatusCreated, rekeningResponse)
 }
 
-func (c *kegiatanController) UpdateKegiatan(cntx *gin.Context) {
-	var kegiatanRequest request.UpdateKegiatanRequest
+func (c *rekeningController) UpdateRekening(cntx *gin.Context) {
+	var rekeningRequest request.UpdateRekeningRequest
 
-	var err = cntx.ShouldBindJSON(&kegiatanRequest)
+	var err = cntx.ShouldBindJSON(&rekeningRequest)
 	if err != nil {
 		var errorMessages = []string{}
 
@@ -108,7 +108,7 @@ func (c *kegiatanController) UpdateKegiatan(cntx *gin.Context) {
 	var idString = cntx.Param("id")
 	var id, _ = strconv.Atoi(idString)
 
-	kegiatan, err := c.kegiatanService.Update(id, kegiatanRequest)
+	rekening, err := c.rekeningService.Update(id, rekeningRequest)
 	if err != nil {
 		cntx.JSON(http.StatusBadRequest, gin.H{
 			"error": cntx.Error(err),
@@ -116,16 +116,16 @@ func (c *kegiatanController) UpdateKegiatan(cntx *gin.Context) {
 		return
 	}
 
-	var kegiatanResponse = helper.ConvertToKegiatanResponse(kegiatan)
+	var rekeningResponse = helper.ConvertToRekeningResponse(rekening)
 
-	cntx.JSON(http.StatusOK, kegiatanResponse)
+	cntx.JSON(http.StatusOK, rekeningResponse)
 }
 
-func (c *kegiatanController) DeleteKegiatan(cntx *gin.Context) {
+func (c *rekeningController) DeleteRekening(cntx *gin.Context) {
 	var idString = cntx.Param("id")
 	var id, _ = strconv.Atoi(idString)
 
-	_, err := c.kegiatanService.Delete(id)
+	_, err := c.rekeningService.Delete(id)
 	if err != nil {
 		cntx.JSON(http.StatusBadRequest, gin.H{
 			"error": cntx.Error(err),
@@ -136,5 +136,4 @@ func (c *kegiatanController) DeleteKegiatan(cntx *gin.Context) {
 	cntx.JSON(http.StatusOK, gin.H{
 		"status": "Data berhasil dihapus",
 	})
-
 }

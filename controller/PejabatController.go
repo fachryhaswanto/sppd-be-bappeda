@@ -72,6 +72,34 @@ func (c *pejabatController) GetPejabatByName(cntx *gin.Context) {
 	cntx.JSON(http.StatusOK, pejabatResponse)
 }
 
+func (c *pejabatController) GetPejabatBySearch(cntx *gin.Context) {
+	var whereClauseString = cntx.Request.URL.Query()
+	var whereClauseInterface = map[string]interface{}{}
+
+	for k, v := range whereClauseString {
+		interfaceKey := k
+		interfaceValue := v
+
+		whereClauseInterface[interfaceKey] = interfaceValue
+	}
+
+	var pejabats, err = c.pejabatService.FindBySearch(whereClauseInterface)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+	}
+
+	var pejabatsResponse []responses.PejabatResponse
+
+	for _, pejabat := range pejabats {
+		var pejabatResponse = helper.ConvertToPejabatResponse(pejabat)
+		pejabatsResponse = append(pejabatsResponse, pejabatResponse)
+	}
+
+	cntx.JSON(http.StatusOK, pejabatsResponse)
+}
+
 func (c *pejabatController) CreatePejabat(cntx *gin.Context) {
 	var pejabatRequest request.CreatePejabatRequest
 

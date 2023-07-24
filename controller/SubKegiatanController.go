@@ -82,9 +82,9 @@ func (c *subKegiatanController) CreateSubKegiatan(cntx *gin.Context) {
 		return
 	}
 
-	cntx.JSON(http.StatusCreated, gin.H{
-		"data": subKegiatan,
-	})
+	var subKegiatanResponse = helper.ConvertToSubKegiatanResponse(subKegiatan)
+
+	cntx.JSON(http.StatusCreated, subKegiatanResponse)
 }
 
 func (c *subKegiatanController) UpdateSubKegiatan(cntx *gin.Context) {
@@ -116,9 +116,9 @@ func (c *subKegiatanController) UpdateSubKegiatan(cntx *gin.Context) {
 		return
 	}
 
-	cntx.JSON(http.StatusOK, gin.H{
-		"data": subKegiatan,
-	})
+	var subKegiatanResponse = helper.ConvertToSubKegiatanResponse(subKegiatan)
+
+	cntx.JSON(http.StatusOK, subKegiatanResponse)
 }
 
 func (c *subKegiatanController) DeleteSubKegiatan(cntx *gin.Context) {

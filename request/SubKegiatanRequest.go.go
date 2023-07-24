@@ -1,15 +1,15 @@
 package request
 
 type CreateSubKegiatanRequest struct {
-	Tahun        string `json:"tahun" binding:"required"`
-	Nama_Program string `json:"nama_program" binding:"required"`
-	Kode         string `json:"kode" binding:"required"`
-	Kegiatan     string `json:"kegiatan" binding:"required"`
+	KegiatanId      int    `json:"kegiatanId" binding:"required"`
+	KodeSubKegiatan string `json:"kodeSubKegiatan" binding:"required"`
+	NamaSubKegiatan string `json:"namaSubKegiatan" binding:"required"`
+	PejabatId       int    `json:"pejabatId" binding:"required"`
 }
 
 type UpdateSubKegiatanRequest struct {
-	Tahun        string `json:"tahun"`
-	Nama_Program string `json:"nama_program"`
-	Kode         string `json:"kode"`
-	Kegiatan     string `json:"kegiatan"`
+	KegiatanId      int    `json:"kegiatanId"`
+	KodeSubKegiatan string `json:"kodeSubKegiatan"`
+	NamaSubKegiatan string `json:"namaSubKegiatan"`
+	PejabatId       int    `json:"pejabatId"`
 }

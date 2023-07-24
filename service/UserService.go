@@ -7,6 +7,7 @@ import (
 
 type UserService interface {
 	FindByUser(username string, password string) (model.User, error)
+	Login(username string) (model.User, error)
 }
 
 type userService struct {
@@ -19,6 +20,12 @@ func NewUserService(repository repository.UserRepository) *userService {
 
 func (s *userService) FindByUser(username string, password string) (model.User, error) {
 	var user, err = s.userRepository.FindByUser(username, password)
+
+	return user, err
+}
+
+func (s *userService) Login(username string) (model.User, error) {
+	var user, err = s.userRepository.Login(username)
 
 	return user, err
 }

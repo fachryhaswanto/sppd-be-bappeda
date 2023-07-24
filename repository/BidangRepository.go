@@ -25,7 +25,7 @@ func NewBidangRepository(db *gorm.DB) *bidangRepository {
 func (r *bidangRepository) FindAll() ([]model.Bidang, error) {
 	var bidangs []model.Bidang
 
-	var err = r.db.Find(&bidangs).Error
+	var err = r.db.Where("id not in (8)").Find(&bidangs).Error
 
 	return bidangs, err
 }
@@ -33,7 +33,7 @@ func (r *bidangRepository) FindAll() ([]model.Bidang, error) {
 func (r *bidangRepository) FindById(id int) (model.Bidang, error) {
 	var bidang model.Bidang
 
-	var err = r.db.Find(&bidang, id).Error
+	var err = r.db.Where("id not in (8)").Find(&bidang, id).Error
 
 	return bidang, err
 }

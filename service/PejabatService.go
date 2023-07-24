@@ -10,6 +10,7 @@ type PejabatService interface {
 	FindAll() ([]model.Pejabat, error)
 	FindById(id int) (model.Pejabat, error)
 	FindByName(name string) (model.Pejabat, error)
+	FindBySearch(whereClause map[string]interface{}) ([]model.Pejabat, error)
 	Create(pejabat request.CreatePejabatRequest) (model.Pejabat, error)
 	Update(id int, pejabat request.UpdatePejabatRequest) (model.Pejabat, error)
 	Delete(id int) (model.Pejabat, error)
@@ -39,6 +40,12 @@ func (s *pejabatService) FindByName(name string) (model.Pejabat, error) {
 	var pejabat, err = s.pejabatRepository.FindByName(name)
 
 	return pejabat, err
+}
+
+func (s *pejabatService) FindBySearch(whereClause map[string]interface{}) ([]model.Pejabat, error) {
+	var pejabats, err = s.pejabatRepository.FindBySearch(whereClause)
+
+	return pejabats, err
 }
 
 func (s *pejabatService) Create(pejabatRequest request.CreatePejabatRequest) (model.Pejabat, error) {

@@ -7,11 +7,11 @@ import (
 )
 
 type SubKegiatanRepository interface {
-	FindAll() ([]model.Sub_Kegiatan, error)
-	FindById(id int) (model.Sub_Kegiatan, error)
-	Create(subKegiatan model.Sub_Kegiatan) (model.Sub_Kegiatan, error)
-	Update(subKegiatan model.Sub_Kegiatan) (model.Sub_Kegiatan, error)
-	Delete(subKegiatan model.Sub_Kegiatan) (model.Sub_Kegiatan, error)
+	FindAll() ([]model.SubKegiatan, error)
+	FindById(id int) (model.SubKegiatan, error)
+	Create(subKegiatan model.SubKegiatan) (model.SubKegiatan, error)
+	Update(subKegiatan model.SubKegiatan) (model.SubKegiatan, error)
+	Delete(subKegiatan model.SubKegiatan) (model.SubKegiatan, error)
 }
 
 type subKegiatanRepository struct {
@@ -22,40 +22,40 @@ func NewSubKegiatanRepository(db *gorm.DB) *subKegiatanRepository {
 	return &subKegiatanRepository{db}
 }
 
-func (r *subKegiatanRepository) FindAll() ([]model.Sub_Kegiatan, error) {
-	var subKegiatans []model.Sub_Kegiatan
+func (r *subKegiatanRepository) FindAll() ([]model.SubKegiatan, error) {
+	var subKegiatans []model.SubKegiatan
 
-	var err = r.db.Find(&subKegiatans).Error
+	var err = r.db.Model(&subKegiatans).Preload("Kegiatan").Preload("Pejabat").Find(&subKegiatans).Error
 
 	return subKegiatans, err
 }
 
-func (r *subKegiatanRepository) FindById(id int) (model.Sub_Kegiatan, error) {
-	var subKegiatan model.Sub_Kegiatan
+func (r *subKegiatanRepository) FindById(id int) (model.SubKegiatan, error) {
+	var subKegiatan model.SubKegiatan
 
-	var err = r.db.Find(&subKegiatan, id).Error
+	var err = r.db.Model(&subKegiatan).Preload("Kegiatan").Preload("Pejabat").Take(&subKegiatan, id).Error
 
 	return subKegiatan, err
 }
 
-func (r *subKegiatanRepository) Create(subKegiatan model.Sub_Kegiatan) (model.Sub_Kegiatan, error) {
+func (r *subKegiatanRepository) Create(subKegiatan model.SubKegiatan) (model.SubKegiatan, error) {
 	var err = r.db.Create(&subKegiatan).Error
 
 	return subKegiatan, err
 }
 
-func (r *subKegiatanRepository) Update(subKegiatan model.Sub_Kegiatan) (model.Sub_Kegiatan, error) {
-	var err = r.db.Model(&subKegiatan).Updates(model.Sub_Kegiatan{
-		Tahun:        subKegiatan.Tahun,
-		Nama_Program: subKegiatan.Nama_Program,
-		Kode:         subKegiatan.Kode,
-		Kegiatan:     subKegiatan.Kegiatan,
+func (r *subKegiatanRepository) Update(subKegiatan model.SubKegiatan) (model.SubKegiatan, error) {
+	var err = r.db.Model(&subKegiatan).Updates(model.SubKegiatan{
+		KegiatanId:      subKegiatan.KegiatanId,
+		KodeSubKegiatan: subKegiatan.KodeSubKegiatan,
+		NamaSubKegiatan: subKegiatan.NamaSubKegiatan,
+		PejabatId:       subKegiatan.PejabatId,
 	}).Error
 
 	return subKegiatan, err
 }
 
-func (r *subKegiatanRepository) Delete(subKegiatan model.Sub_Kegiatan) (model.Sub_Kegiatan, error) {
+func (r *subKegiatanRepository) Delete(subKegiatan model.SubKegiatan) (model.SubKegiatan, error) {
 	var err = r.db.Delete(&subKegiatan).Error
 
 	return subKegiatan, err

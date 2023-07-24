@@ -72,6 +72,35 @@ func (c *pegawaiController) GetPegawaiByName(cntx *gin.Context) {
 	cntx.JSON(http.StatusOK, pegawaiResponse)
 }
 
+func (c *pegawaiController) GetPegawaisBySearch(cntx *gin.Context) {
+	var whereClauseString = cntx.Request.URL.Query()
+	var whereClauseInterface = map[string]interface{}{}
+
+	for k, v := range whereClauseString {
+		interfaceKey := k
+		interfaceVal := v
+
+		whereClauseInterface[interfaceKey] = interfaceVal
+	}
+
+	var pegawais, err = c.pegawaiService.FindBySearch(whereClauseInterface)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+	}
+
+	var pegawaisResponse []responses.PegawaiResponse
+
+	for _, pegawai := range pegawais {
+		var pegawaiResponse = helper.ConvertToPegawaiResponse(pegawai)
+		pegawaisResponse = append(pegawaisResponse, pegawaiResponse)
+	}
+
+	cntx.JSON(http.StatusOK, pegawaisResponse)
+
+}
+
 func (c *pegawaiController) CreatePegawai(cntx *gin.Context) {
 	var pegawaiRequest request.CreatePegawaiRequest
 
@@ -134,6 +163,37 @@ func (c *pegawaiController) UpdatePegawai(cntx *gin.Context) {
 
 	cntx.JSON(http.StatusOK, gin.H{
 		"data": pegawai,
+	})
+}
+
+func (c *pegawaiController) UpdateBatchPegawaiStatusPerjalanan(cntx *gin.Context) {
+	var updatePegawaiBatchRequest request.UpdatePegawaiBatchStatusPerjalanan
+
+	var err = cntx.ShouldBindJSON(&updatePegawaiBatchRequest)
+	if err != nil {
+		var errorMessages = []string{}
+
+		for _, e := range err.(validator.ValidationErrors) {
+			var errorMessage = fmt.Sprintf("Error on field %s, condition : %s", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": errorMessages,
+		})
+		return
+	}
+
+	err = c.pegawaiService.UpdateBatchStatusPerjalanan(updatePegawaiBatchRequest)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"errors": cntx.Error(err),
+		})
+		return
+	}
+
+	cntx.JSON(http.StatusOK, gin.H{
+		"status": "Data status perjalanan pegawai berhasil diubah",
 	})
 }
 

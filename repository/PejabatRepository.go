@@ -10,6 +10,7 @@ type PejabatRepository interface {
 	FindAll() ([]model.Pejabat, error)
 	FindById(id int) (model.Pejabat, error)
 	FindByName(name string) (model.Pejabat, error)
+	FindBySearch(whereClause map[string]interface{}) ([]model.Pejabat, error)
 	Create(pejabat model.Pejabat) (model.Pejabat, error)
 	Update(pejabat model.Pejabat) (model.Pejabat, error)
 	Delete(pejabat model.Pejabat) (model.Pejabat, error)
@@ -45,6 +46,14 @@ func (r *pejabatRepository) FindByName(name string) (model.Pejabat, error) {
 	var err = r.db.Where("nama = ?", name).Take(&pejabat).Error
 
 	return pejabat, err
+}
+
+func (r *pejabatRepository) FindBySearch(whereClause map[string]interface{}) ([]model.Pejabat, error) {
+	var pejabats []model.Pejabat
+
+	var err = r.db.Where(whereClause).Model(&pejabats).Find(&pejabats).Error
+
+	return pejabats, err
 }
 
 func (r *pejabatRepository) Create(pejabat model.Pejabat) (model.Pejabat, error) {

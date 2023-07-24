@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"sppd/helper"
-	"sppd/model"
 	"sppd/request"
 	"sppd/responses"
 	"sppd/service"
@@ -15,14 +14,12 @@ import (
 )
 
 type sptController struct {
-	sptService  service.SptService
-	sppdService service.SppdService
+	sptService service.SptService
 }
 
-func NewSptController(sptService service.SptService, sppdService service.SppdService) *sptController {
+func NewSptController(sptService service.SptService) *sptController {
 	return &sptController{
 		sptService,
-		sppdService,
 	}
 }
 
@@ -77,7 +74,34 @@ func (c *sptController) GetAllDitugaskan(cntx *gin.Context) {
 	}
 
 	cntx.JSON(http.StatusOK, ditugaskansResponse)
+}
 
+func (c *sptController) GetSptsBySearch(cntx *gin.Context) {
+	var whereClauseString = cntx.Request.URL.Query()
+	var whereClauseInterface = map[string]interface{}{}
+
+	for k, v := range whereClauseString {
+		interfaceKey := k
+		interfaceVal := v
+
+		whereClauseInterface[interfaceKey] = interfaceVal
+	}
+
+	var spts, err = c.sptService.FindBySearch(whereClauseInterface)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+	}
+
+	var sptsResponse []responses.SptResponse
+
+	for _, spt := range spts {
+		var sptResponse = helper.ConvertToSptResponse(spt)
+		sptsResponse = append(sptsResponse, sptResponse)
+	}
+
+	cntx.JSON(http.StatusOK, sptsResponse)
 }
 
 func (c *sptController) CreateSpt(cntx *gin.Context) {
@@ -106,20 +130,9 @@ func (c *sptController) CreateSpt(cntx *gin.Context) {
 		return
 	}
 
-	var sppd model.Sppd
-	sppd.Idspt = spt.Id
+	var sptResponse = helper.ConvertToSptResponse(spt)
 
-	_, err = c.sppdService.Create(sppd)
-	if err != nil {
-		cntx.JSON(http.StatusBadRequest, gin.H{
-			"error": cntx.Error(err),
-		})
-		return
-	}
-
-	cntx.JSON(http.StatusCreated, gin.H{
-		"data": spt,
-	})
+	cntx.JSON(http.StatusCreated, sptResponse)
 }
 
 func (c *sptController) UpdateSpt(cntx *gin.Context) {
@@ -154,6 +167,22 @@ func (c *sptController) UpdateSpt(cntx *gin.Context) {
 	cntx.JSON(http.StatusOK, gin.H{
 		"data": spt,
 	})
+}
+
+func (c *sptController) UpdateStatusSppd(cntx *gin.Context) {
+	var idString = cntx.Param("id")
+	var id, _ = strconv.Atoi(idString)
+
+	var valueString = cntx.Param("value")
+	var value, _ = strconv.Atoi(valueString)
+
+	var err = c.sptService.UpdateStatusSppd(id, value)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, cntx.Error(err))
+		return
+	}
+
+	cntx.JSON(http.StatusOK, "data spt berhasil diperbarui")
 }
 
 func (c *sptController) DeleteSpt(cntx *gin.Context) {

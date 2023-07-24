@@ -8,4 +8,5 @@ type AppConfig struct {
 	DatabaseName     string
 	AppPort          string
 	AllowOrigins     string
+	SecretKey        string
 }

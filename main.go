@@ -5,6 +5,7 @@ import (
 	"os"
 	"sppd/config"
 	"sppd/controller"
+	"sppd/middleware"
 	"sppd/repository"
 	"sppd/service"
 
@@ -67,88 +68,132 @@ func main() {
 	var subKegiatanService = service.NewSubKegiatanService(subKegiatanRepository)
 	var subKegiatanController = controller.NewSubKegiatanController(subKegiatanService)
 
-	var sppdRepository = repository.NewSppdRepository(config.DB)
-	var sppdService = service.NewSppdService(sppdRepository)
-	var sppdController = controller.NewSppdController(sppdService)
+	var rekeningRepository = repository.NewRekeningRepository(config.DB)
+	var rekeningService = service.NewRekeningService(rekeningRepository)
+	var rekeningController = controller.NewRekeningController(rekeningService)
 
 	var sptRepository = repository.NewSptRepository(config.DB)
 	var sptService = service.NewSptService(sptRepository)
-	var sptController = controller.NewSptController(sptService, sppdService)
+	var sptController = controller.NewSptController(sptService)
+
+	var sppdRepository = repository.NewSppdRepository(config.DB)
+	var sppdService = service.NewSppdService(sppdRepository)
+	var sppdController = controller.NewSppdController(sppdService, sptService)
+
+	var dataDitugaskanRepository = repository.NewDataDitugaskanRepository(config.DB)
+	var dataDitugaskanService = service.NewDataDitugaskanService(dataDitugaskanRepository, sptRepository)
+	var dataDitugaskanController = controller.NewDataDitugaskanController(dataDitugaskanService)
+
+	var dataPengikutRepository = repository.NewDataPengikutRepository(config.DB)
+	var dataPengikutService = service.NewDataPengikutService(dataPengikutRepository)
+	var dataPengikutController = controller.NewDataPengikutController(dataPengikutService)
 
 	var server = gin.Default()
 
 	server.MaxMultipartMemory = 5 << 20
 
 	server.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"https://" + os.Getenv("APP_ALLOW_ORIGINS"), "http://localhost:3000"},
-		AllowMethods: []string{"POST", "PUT", "DELETE", "GET", "PATCH"},
-		AllowHeaders: []string{"Content-Type, access-control-allow-origin, access-control-allow-headers"},
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowCredentials: true,
+		AllowMethods:     []string{"POST", "PUT", "DELETE", "GET", "PATCH"},
+		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "access-control-allow-origin, access-control-allow-headers", "Content-Type", "Accept", "Origin", "cookie-sppd", "Access-Control-Allow-Credentials"},
 	}))
 
-	server.GET("/user/:username/:password", userController.GetUser)
+	server.GET("/auth/session", middleware.CheckAuth, userController.Validate)
+	server.POST("/auth/login", userController.LoginUser)
+	server.POST("/auth/logout", userController.LogoutUser)
 
-	server.GET("/kabupaten", kabupatenController.GetKabupatens)
-	server.GET("/kabupaten/:id", kabupatenController.GetKabupaten)
-	server.POST("/kabupaten", kabupatenController.CreateKabupaten)
-	server.PATCH("/kabupaten/:id", kabupatenController.UpdateKabupaten)
-	server.DELETE("/kabupaten/:id", kabupatenController.DeleteKabupaten)
+	server.GET("/kabupaten", middleware.CheckAuth, kabupatenController.GetKabupatens)
+	server.GET("/kabupaten/:id", middleware.CheckAuth, kabupatenController.GetKabupaten)
+	server.POST("/kabupaten", middleware.CheckAuth, kabupatenController.CreateKabupaten)
+	server.PATCH("/kabupaten/:id", middleware.CheckAuth, kabupatenController.UpdateKabupaten)
+	server.DELETE("/kabupaten/:id", middleware.CheckAuth, kabupatenController.DeleteKabupaten)
 
-	server.GET("/instansi", instansiController.GetInstansis)
-	server.GET("/instansi/:id", instansiController.GetInstansi)
-	server.POST("/instansi", instansiController.CreateInstansi)
-	server.PATCH("/instansi/:id", instansiController.UpdateInstansi)
-	server.DELETE("/instansi/:id", instansiController.DeleteInstansi)
+	server.GET("/instansi", middleware.CheckAuth, instansiController.GetInstansis)
+	server.GET("/instansi/:id", middleware.CheckAuth, instansiController.GetInstansi)
+	server.POST("/instansi", middleware.CheckAuth, instansiController.CreateInstansi)
+	server.PATCH("/instansi/:id", middleware.CheckAuth, instansiController.UpdateInstansi)
+	server.DELETE("/instansi/:id", middleware.CheckAuth, instansiController.DeleteInstansi)
 
-	server.GET("/bidang", bidangController.GetBidangs)
-	server.GET("/bidang/:id", bidangController.GetBidang)
-	server.POST("/bidang", bidangController.CreateBidang)
-	server.PATCH("/bidang/:id", bidangController.UpdateBidang)
-	server.DELETE("/bidang/:id", bidangController.DeleteBidang)
+	server.GET("/bidang", middleware.CheckAuth, bidangController.GetBidangs)
+	server.GET("/bidang/:id", middleware.CheckAuth, bidangController.GetBidang)
+	server.POST("/bidang", middleware.CheckAuth, bidangController.CreateBidang)
+	server.PATCH("/bidang/:id", middleware.CheckAuth, bidangController.UpdateBidang)
+	server.DELETE("/bidang/:id", middleware.CheckAuth, bidangController.DeleteBidang)
 
-	server.GET("/pejabat", pejabatController.GetPejabats)
-	server.GET("/pejabat/:id", pejabatController.GetPejabat)
-	server.GET("/pejabat/nama/:name", pejabatController.GetPejabatByName)
-	server.POST("/pejabat", pejabatController.CreatePejabat)
-	server.PATCH("/pejabat/:id", pejabatController.UpdatePejabat)
-	server.DELETE("/pejabat/:id", pejabatController.DeletePejabat)
+	server.GET("/pejabat", middleware.CheckAuth, pejabatController.GetPejabats)
+	server.GET("/pejabat/:id", middleware.CheckAuth, pejabatController.GetPejabat)
+	server.GET("/pejabat/nama/:name", middleware.CheckAuth, pejabatController.GetPejabatByName)
+	server.GET("/pejabat/search", middleware.CheckAuth, pejabatController.GetPejabatBySearch)
+	server.POST("/pejabat", middleware.CheckAuth, pejabatController.CreatePejabat)
+	server.PATCH("/pejabat/:id", middleware.CheckAuth, pejabatController.UpdatePejabat)
+	server.DELETE("/pejabat/:id", middleware.CheckAuth, pejabatController.DeletePejabat)
 
-	server.GET("/pegawai", pegawaiController.GetPegawais)
-	server.GET("/pegawai/:id", pegawaiController.GetPegawai)
-	server.GET("/pegawai/nama/:name", pegawaiController.GetPegawaiByName)
-	server.POST("/pegawai", pegawaiController.CreatePegawai)
-	server.PATCH("/pegawai/:id", pegawaiController.UpdatePegawai)
-	server.DELETE("/pegawai/:id", pegawaiController.DeletePegawai)
+	server.GET("/pegawai", middleware.CheckAuth, pegawaiController.GetPegawais)
+	server.GET("/pegawai/:id", middleware.CheckAuth, pegawaiController.GetPegawai)
+	server.GET("/pegawai/nama/:name", middleware.CheckAuth, pegawaiController.GetPegawaiByName)
+	server.GET("/pegawai/search", middleware.CheckAuth, pegawaiController.GetPegawaisBySearch)
+	server.POST("/pegawai", middleware.CheckAuth, pegawaiController.CreatePegawai)
+	server.PATCH("/pegawai/:id", middleware.CheckAuth, pegawaiController.UpdatePegawai)
+	server.PATCH("/pegawai/batch", middleware.CheckAuth, pegawaiController.UpdateBatchPegawaiStatusPerjalanan)
+	server.DELETE("/pegawai/:id", middleware.CheckAuth, pegawaiController.DeletePegawai)
 
-	server.GET("/program", programController.GetPrograms)
-	server.GET("/program/:id", programController.GetProgram)
-	server.POST("/program", programController.CreateProgram)
-	server.PATCH("/program/:id", programController.UpdateProgram)
-	server.DELETE("/program/:id", programController.DeleteProgram)
+	server.GET("/program", middleware.CheckAuth, programController.GetPrograms)
+	server.GET("/program/:id", middleware.CheckAuth, programController.GetProgram)
+	server.POST("/program", middleware.CheckAuth, programController.CreateProgram)
+	server.PATCH("/program/:id", middleware.CheckAuth, programController.UpdateProgram)
+	server.DELETE("/program/:id", middleware.CheckAuth, programController.DeleteProgram)
 
-	server.GET("/kegiatan", kegiatanController.GetKegiatans)
-	server.GET("/kegiatan/:id", kegiatanController.GetKegiatan)
-	server.POST("/kegiatan", kegiatanController.CreateKegiatan)
-	server.PATCH("/kegiatan/:id", kegiatanController.UpdateKegiatan)
-	server.DELETE("/kegiata/:id", kegiatanController.DeleteKegiatan)
+	server.GET("/kegiatan", middleware.CheckAuth, kegiatanController.GetKegiatans)
+	server.GET("/kegiatan/:id", middleware.CheckAuth, kegiatanController.GetKegiatan)
+	server.POST("/kegiatan", middleware.CheckAuth, kegiatanController.CreateKegiatan)
+	server.PATCH("/kegiatan/:id", middleware.CheckAuth, kegiatanController.UpdateKegiatan)
+	server.DELETE("/kegiatan/:id", middleware.CheckAuth, kegiatanController.DeleteKegiatan)
 
-	server.GET("/subkegiatan", subKegiatanController.GetSubKegiatans)
-	server.GET("/subkegiatan/:id", subKegiatanController.GetSubKegiatan)
-	server.POST("/subkegiatan", subKegiatanController.CreateSubKegiatan)
-	server.PATCH("/subkegiatan/:id", subKegiatanController.UpdateSubKegiatan)
-	server.DELETE("/subkegiatan/:id", subKegiatanController.DeleteSubKegiatan)
+	server.GET("/subkegiatan", middleware.CheckAuth, subKegiatanController.GetSubKegiatans)
+	server.GET("/subkegiatan/:id", middleware.CheckAuth, subKegiatanController.GetSubKegiatan)
+	server.POST("/subkegiatan", middleware.CheckAuth, subKegiatanController.CreateSubKegiatan)
+	server.PATCH("/subkegiatan/:id", middleware.CheckAuth, subKegiatanController.UpdateSubKegiatan)
+	server.DELETE("/subkegiatan/:id", middleware.CheckAuth, subKegiatanController.DeleteSubKegiatan)
 
-	server.GET("/spt", sptController.GetSpts)
-	server.GET("/spt/:id", sptController.GetSpt)
-	server.GET("/spt/ditugaskan", sptController.GetAllDitugaskan)
-	server.POST("/spt", sptController.CreateSpt)
-	server.PATCH("/spt/:id", sptController.UpdateSpt)
-	server.DELETE("/spt/:id", sptController.DeleteSpt)
+	server.GET("/rekening", middleware.CheckAuth, rekeningController.GetRekenings)
+	server.GET("/rekening/:id", middleware.CheckAuth, rekeningController.GetRekening)
+	server.POST("/rekening", middleware.CheckAuth, rekeningController.CreateRekening)
+	server.PATCH("/rekening/:id", middleware.CheckAuth, rekeningController.UpdateRekening)
+	server.DELETE("/rekening/:id", middleware.CheckAuth, rekeningController.DeleteRekening)
 
-	server.GET("/sppd/", sppdController.GetSppds)
-	server.GET("/join", sppdController.GetJoin)
-	server.GET("/sppd/:id", sppdController.GetSppd)
-	server.PATCH("/sppd/:id", sppdController.UpdateSppd)
-	server.DELETE("/sppd/:id", sppdController.DeleteSppd)
+	server.GET("/spt", middleware.CheckAuth, sptController.GetSpts)
+	server.GET("/spt/:id", middleware.CheckAuth, sptController.GetSpt)
+	server.GET("/spt/ditugaskan", middleware.CheckAuth, sptController.GetAllDitugaskan)
+	server.GET("/spt/search", middleware.CheckAuth, sptController.GetSptsBySearch)
+	server.POST("/spt", middleware.CheckAuth, sptController.CreateSpt)
+	server.PATCH("/spt/:id", middleware.CheckAuth, sptController.UpdateSpt)
+	server.PATCH("/spt/updatestatus/:id/:value", middleware.CheckAuth, sptController.UpdateStatusSppd)
+	server.DELETE("/spt/:id", middleware.CheckAuth, sptController.DeleteSpt)
+
+	server.GET("/sppd", middleware.CheckAuth, sppdController.GetSppds)
+	server.GET("/sppd/:id", middleware.CheckAuth, sppdController.GetSppd)
+	server.GET("/sppd/search", middleware.CheckAuth, sppdController.GetSppdBySearch)
+	server.GET("/sppd/count", middleware.CheckAuth, sppdController.CountDataBySptId)
+	server.POST("/sppd", middleware.CheckAuth, sppdController.CreateSppd)
+	server.PATCH("/sppd/:id", middleware.CheckAuth, sppdController.UpdateSppd)
+	server.PATCH("/sppd/updatebysptid/:sptid", middleware.CheckAuth, sppdController.UpdateSppdBySptId)
+	server.DELETE("/sppd/:id", middleware.CheckAuth, sppdController.DeleteSppd)
+	server.DELETE("/sppd/sptid/:sptid", middleware.CheckAuth, sppdController.DeleteSppdBySptId)
+
+	server.GET("/dataditugaskan", middleware.CheckAuth, dataDitugaskanController.GetDataDitugaskans)
+	server.GET("/dataditugaskan/:id", middleware.CheckAuth, dataDitugaskanController.GetDataDitugaskan)
+	server.GET("/dataditugaskan/search", middleware.CheckAuth, dataDitugaskanController.GetDataDitugaskansBySearch)
+	server.GET("/dataditugaskan/count", middleware.CheckAuth, dataDitugaskanController.CountDataBySptId)
+	server.POST("/dataditugaskan", middleware.CheckAuth, dataDitugaskanController.CreateDataDitugaskan)
+	server.PATCH("/dataditugaskan/updatestatus/:sptid/:value", middleware.CheckAuth, dataDitugaskanController.UpdateStatusSppd)
+	server.DELETE("/dataditugaskan/:sptid", middleware.CheckAuth, dataDitugaskanController.DeleteDataDitugaskan)
+
+	server.GET("/datapengikut", middleware.CheckAuth, dataPengikutController.GetDataPengikuts)
+	server.GET("/datapengikut/:id", middleware.CheckAuth, dataPengikutController.GetDataPengikut)
+	server.GET("/datapengikut/search", middleware.CheckAuth, dataPengikutController.GetDataPengikutBySearch)
+	server.POST("/datapengikut", middleware.CheckAuth, dataPengikutController.CreateDataPengikut)
+	server.DELETE("/datapengikut/:sptid", middleware.CheckAuth, dataPengikutController.DeleteDataPengikut)
 
 	server.POST("/upload/", controller.UploadFile)
 
