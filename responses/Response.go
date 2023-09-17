@@ -57,6 +57,13 @@ type PegawaiResponse struct {
 	UserId           int            `json:"userId"`
 }
 
+type JumlahPerjalananPegawaiResponse struct {
+	Nip              string `json:"nip"`
+	Nama             string `json:"nama"`
+	Bidang           string `json:"bidang"`
+	JumlahPerjalanan int64  `json:"jumlahPerjalanan"`
+}
+
 type PegawaiByNameResponse struct {
 	Nip      string `json:"nip"`
 	Nama     string `json:"nama"`
@@ -71,6 +78,7 @@ type ProgramResponse struct {
 	Kode       string `json:"kode"`
 	Pembebanan string `json:"pembebanan"`
 	Program    string `json:"program"`
+	Tahun      string `json:"tahun"`
 }
 
 type KegiatanResponse struct {
@@ -79,6 +87,7 @@ type KegiatanResponse struct {
 	Program      ProgramResponse `json:"program"`
 	KodeKegiatan string          `json:"kodeKegiatan"`
 	NamaKegiatan string          `json:"namaKegiatan"`
+	Tahun        string          `json:"tahun"`
 }
 
 type SubKegiatanResponse struct {
@@ -89,6 +98,7 @@ type SubKegiatanResponse struct {
 	NamaSubKegiatan string           `json:"namaSubKegiatan"`
 	PejabatId       int              `json:"pejabatId"`
 	Pejabat         PejabatResponse  `json:"pejabat"`
+	Tahun           string           `json:"tahun"`
 }
 
 type RekeningResponse struct {
@@ -111,7 +121,9 @@ type SptResponse struct {
 	Tanggal_Berangkat string              `json:"tanggal_berangkat"`
 	Tanggal_Kembali   string              `json:"tanggal_kembali"`
 	Lama_Perjalanan   string              `json:"lama_perjalanan"`
-	Pejabat_Pemberi   string              `json:"pejabat_pemberi"`
+	Tahun             string              `json:"tahun"`
+	PejabatId         int                 `json:"pejabatId"`
+	Pejabat           PejabatResponse     `json:"pejabat"`
 	Status            string              `json:"status"`
 	StatusSppd        int                 `json:"statusSppd"`
 	File_Surat_Tugas  string              `json:"file_surat_tugas"`
@@ -128,24 +140,41 @@ type SppdResponse struct {
 	Tanggal_Sppd     string          `json:"tanggal_sppd"`
 	Tempat_Berangkat string          `json:"tempat_berangkat"`
 	Tempat_Tujuan    string          `json:"tempat_tujuan"`
+	Tahun            string          `json:"tahun"`
 	Alat_Angkutan    string          `json:"alat_angkutan"`
 	Instansi         string          `json:"instansi"`
 	PejabatId        int             `json:"pejabatId"`
 	Pejabat          PejabatResponse `json:"pejabat"`
+	StatusKwitansi   int             `json:"statusKwitansi"`
 	SptId            int             `json:"sptId"`
 	Spt              SptResponse     `json:"spt"`
 	UserId           int             `json:"userId"`
 }
 
 type DataDitugaskanResponse struct {
-	Id         int             `json:"id"`
-	SptId      int             `json:"sptId"`
-	Spt        SptResponse     `json:"spt"`
-	PegawaiId  int             `json:"pegawaiId"`
-	Pegawai    PegawaiResponse `json:"pegawai"`
-	StatusSppd int             `json:"statusSppd"`
-	CreatedAt  time.Time       `json:"createdAt"`
-	UpdatedAt  time.Time       `json:"updatedAt"`
+	Id          int             `json:"id"`
+	SptId       int             `json:"sptId"`
+	Spt         SptResponse     `json:"spt"`
+	PegawaiId   int             `json:"pegawaiId"`
+	Pegawai     PegawaiResponse `json:"pegawai"`
+	NamaPegawai string          `json:"namaPegawai"`
+	StatusSppd  int             `json:"statusSppd"`
+	CreatedAt   time.Time       `json:"createdAt"`
+	UpdatedAt   time.Time       `json:"updatedAt"`
+}
+
+type DataDitugaskanSptResponse struct {
+	Id              int       `json:"id"`
+	SptId           int       `json:"sptId"`
+	PegawaiId       int       `json:"pegawaiId"`
+	NamaPegawai     string    `json:"namaPegawai"`
+	NipPegawai      string    `json:"nipPegawai"`
+	PangkatPegawai  string    `json:"pangkatPegawai"`
+	GolonganPegawai string    `json:"golonganPegawai"`
+	JabatanPegawai  string    `json:"jabatanPegawai"`
+	StatusSppd      int       `json:"statusSppd"`
+	CreatedAt       time.Time `json:"createdAt"`
+	UpdatedAt       time.Time `json:"updatedAt"`
 }
 
 type DataPengikutResponse struct {
@@ -163,4 +192,26 @@ type SemuaNamaDitugaskan struct {
 	Tanggal_Kembali string `json:"tanggal_kembali"`
 	Ditugaskan      string `json:"ditugaskan"`
 	Status          string `json:"status"`
+}
+
+type KwitansiResponse struct {
+	Id            int          `json:"id"`
+	SppdId        int          `json:"sppdId"`
+	Sppd          SppdResponse `json:"sppd"`
+	NomorKwitansi string       `json:"nomorKwitansi"`
+	TanggalBayar  string       `json:"tanggalBayar"`
+	Keperluan     string       `json:"keperluan"`
+	TotalBayar    int          `json:"totalBayar"`
+	Tahun         string       `json:"tahun"`
+	UserId        int          `json:"userId"`
+}
+
+type RincianKwitansiResponse struct {
+	Id          string           `json:"id"`
+	KwitansiId  int              `json:"kwitansiId"`
+	Kwitansi    KwitansiResponse `json:"kwitansi"`
+	NamaRincian string           `json:"namaRincian"`
+	JumlahBayar int              `json:"jumlahBayar"`
+	Banyaknya   int              `json:"banyaknya"`
+	HasilBayar  int              `json:"hasilBayar"`
 }

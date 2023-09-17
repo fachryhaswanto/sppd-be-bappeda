@@ -13,8 +13,10 @@ type SppdRepository interface {
 	FindBySearch(whereClause map[string]interface{}) ([]model.Sppd, error)
 	Create(sppd model.Sppd) (model.Sppd, error)
 	CountDataBySptId(sptId int) (int64, error)
+	CountDataBySearch(whereClause map[string]interface{}) (int64, error)
 	Update(sppd model.Sppd) (model.Sppd, error)
 	UpdateBySptId(sptId int, sppd model.Sppd) (model.Sppd, error)
+	UpdateStatusKwitansi(id int, value int) error
 	Delete(sppd model.Sppd) (model.Sppd, error)
 	DeleteBySptId(sptId int) error
 }
@@ -70,6 +72,21 @@ func (r *sppdRepository) CountDataBySptId(sptId int) (int64, error) {
 	return count, err
 }
 
+func (r *sppdRepository) CountDataBySearch(whereClause map[string]interface{}) (int64, error) {
+	var count int64
+	var err error
+
+	var _, ok = whereClause["all"]
+
+	if ok {
+		err = r.db.Table("sppds").Count(&count).Error
+	} else {
+		err = r.db.Where(whereClause).Table("sppds").Count(&count).Error
+	}
+
+	return count, err
+}
+
 func (r *sppdRepository) Create(sppd model.Sppd) (model.Sppd, error) {
 	var err = r.db.Create(&sppd).Error
 
@@ -85,9 +102,11 @@ func (r *sppdRepository) Update(sppd model.Sppd) (model.Sppd, error) {
 		Tanggal_Sppd:     sppd.Tanggal_Sppd,
 		Tempat_Berangkat: sppd.Tempat_Berangkat,
 		Tempat_Tujuan:    sppd.Tempat_Tujuan,
+		Tahun:            sppd.Tahun,
 		Alat_Angkutan:    sppd.Alat_Angkutan,
 		Instansi:         sppd.Instansi,
 		PejabatId:        sppd.PejabatId,
+		StatusKwitansi:   sppd.StatusKwitansi,
 		SptId:            sppd.SptId,
 		UserId:           sppd.UserId,
 	}).Error
@@ -105,13 +124,25 @@ func (r *sppdRepository) UpdateBySptId(sptId int, sppd model.Sppd) (model.Sppd, 
 		Tanggal_Sppd:     sppd.Tanggal_Sppd,
 		Tempat_Berangkat: sppd.Tempat_Berangkat,
 		Tempat_Tujuan:    sppd.Tempat_Tujuan,
+		Tahun:            sppd.Tahun,
 		Alat_Angkutan:    sppd.Alat_Angkutan,
 		Instansi:         sppd.Instansi,
 		PejabatId:        sppd.PejabatId,
+		StatusKwitansi:   sppd.StatusKwitansi,
 		SptId:            sppd.SptId,
 	}).Error
 
 	return sppd, err
+}
+
+func (r *sppdRepository) UpdateStatusKwitansi(id int, value int) error {
+	var sppd model.Sppd
+
+	var err = r.db.Model(&sppd).Select("StatusKwitansi").Where("id = ?", id).Updates(model.Sppd{
+		StatusKwitansi: value,
+	}).Error
+
+	return err
 }
 
 func (r *sppdRepository) Delete(sppd model.Sppd) (model.Sppd, error) {

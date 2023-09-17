@@ -9,6 +9,7 @@ import (
 type ProgramRepository interface {
 	FindAll() ([]model.Program, error)
 	FindById(id int) (model.Program, error)
+	FindBySearch(whereClause map[string]interface{}) ([]model.Program, error)
 	Create(program model.Program) (model.Program, error)
 	Update(program model.Program) (model.Program, error)
 	Delete(program model.Program) (model.Program, error)
@@ -38,6 +39,14 @@ func (r *programRepository) FindById(id int) (model.Program, error) {
 	return program, err
 }
 
+func (r *programRepository) FindBySearch(whereClause map[string]interface{}) ([]model.Program, error) {
+	var programs []model.Program
+
+	var err = r.db.Where(whereClause).Model(&programs).Find(&programs).Error
+
+	return programs, err
+}
+
 func (r *programRepository) Create(program model.Program) (model.Program, error) {
 	var err = r.db.Create(&program).Error
 
@@ -49,6 +58,7 @@ func (r *programRepository) Update(program model.Program) (model.Program, error)
 		Kode:       program.Kode,
 		Pembebanan: program.Pembebanan,
 		Program:    program.Program,
+		Tahun:      program.Tahun,
 	}).Error
 
 	return program, err

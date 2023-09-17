@@ -9,6 +9,7 @@ import (
 type SubKegiatanRepository interface {
 	FindAll() ([]model.SubKegiatan, error)
 	FindById(id int) (model.SubKegiatan, error)
+	FindBySearch(whereClause map[string]interface{}) ([]model.SubKegiatan, error)
 	Create(subKegiatan model.SubKegiatan) (model.SubKegiatan, error)
 	Update(subKegiatan model.SubKegiatan) (model.SubKegiatan, error)
 	Delete(subKegiatan model.SubKegiatan) (model.SubKegiatan, error)
@@ -38,6 +39,14 @@ func (r *subKegiatanRepository) FindById(id int) (model.SubKegiatan, error) {
 	return subKegiatan, err
 }
 
+func (r *subKegiatanRepository) FindBySearch(whereClause map[string]interface{}) ([]model.SubKegiatan, error) {
+	var subKegiatans []model.SubKegiatan
+
+	var err = r.db.Where(whereClause).Model(&subKegiatans).Preload("Kegiatan").Preload("Pejabat").Find(&subKegiatans).Error
+
+	return subKegiatans, err
+}
+
 func (r *subKegiatanRepository) Create(subKegiatan model.SubKegiatan) (model.SubKegiatan, error) {
 	var err = r.db.Create(&subKegiatan).Error
 
@@ -50,6 +59,7 @@ func (r *subKegiatanRepository) Update(subKegiatan model.SubKegiatan) (model.Sub
 		KodeSubKegiatan: subKegiatan.KodeSubKegiatan,
 		NamaSubKegiatan: subKegiatan.NamaSubKegiatan,
 		PejabatId:       subKegiatan.PejabatId,
+		Tahun:           subKegiatan.Tahun,
 	}).Error
 
 	return subKegiatan, err

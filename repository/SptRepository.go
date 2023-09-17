@@ -13,6 +13,7 @@ type SptRepository interface {
 	FindBySearch(whereClause map[string]interface{}) ([]model.Spt, error)
 	FindByDate(tahunBerangkat, bulanBerangkat, tahunKembali, bulanKembali string, id int) ([]model.Spt, error)
 	CountDataSpt() (int64, error)
+	CountDataSptBySearch(whereClause map[string]interface{}) (int64, error)
 	FindAllDitugaskan() ([]model.Spt, error)
 	Create(spt model.Spt) (model.Spt, error)
 	Update(spt model.Spt) (model.Spt, error)
@@ -32,7 +33,7 @@ func (r *sptRepository) FindAll() ([]model.Spt, error) {
 	var spts []model.Spt
 
 	// var err = r.db.Order("id desc").Find(&spts).Error
-	var err = r.db.Model(&spts).Preload("SubKegiatan").Preload("Rekening").Find(&spts).Error
+	var err = r.db.Model(&spts).Preload("SubKegiatan." + clause.Associations).Preload("SubKegiatan.Kegiatan." + clause.Associations).Preload("Rekening").Preload("Pejabat").Find(&spts).Error
 
 	return spts, err
 }
@@ -40,7 +41,7 @@ func (r *sptRepository) FindAll() ([]model.Spt, error) {
 func (r *sptRepository) FindById(id int) (model.Spt, error) {
 	var spt model.Spt
 
-	var err = r.db.Model(&spt).Preload(clause.Associations).Preload("SubKegiatan."+clause.Associations).Preload("SubKegiatan.Kegiatan."+clause.Associations).Preload("Rekening").Take(&spt, id).Error
+	var err = r.db.Model(&spt).Preload(clause.Associations).Preload("SubKegiatan."+clause.Associations).Preload("SubKegiatan.Kegiatan."+clause.Associations).Preload("Rekening").Preload("Pejabat").Take(&spt, id).Error
 
 	return spt, err
 }
@@ -48,7 +49,7 @@ func (r *sptRepository) FindById(id int) (model.Spt, error) {
 func (r *sptRepository) FindBySearch(whereClause map[string]interface{}) ([]model.Spt, error) {
 	var spts []model.Spt
 
-	var err = r.db.Where(whereClause).Model(&spts).Preload("SubKegiatan").Preload("Rekening").Find(&spts).Error
+	var err = r.db.Where(whereClause).Model(&spts).Preload(clause.Associations).Preload("SubKegiatan." + clause.Associations).Preload("SubKegiatan.Kegiatan." + clause.Associations).Preload("Rekening").Preload("Pejabat").Find(&spts).Error
 
 	return spts, err
 }
@@ -77,6 +78,20 @@ func (r *sptRepository) CountDataSpt() (int64, error) {
 	return count, err
 }
 
+func (r *sptRepository) CountDataSptBySearch(whereClause map[string]interface{}) (int64, error) {
+	var count int64
+	var err error
+	var _, ok = whereClause["all"]
+
+	if ok {
+		err = r.db.Table("spts").Count(&count).Error
+	} else {
+		err = r.db.Where(whereClause).Table("spts").Count(&count).Error
+	}
+
+	return count, err
+}
+
 func (r *sptRepository) Create(spt model.Spt) (model.Spt, error) {
 	var err = r.db.Create(&spt).Error
 
@@ -95,7 +110,8 @@ func (r *sptRepository) Update(spt model.Spt) (model.Spt, error) {
 		Tanggal_Berangkat: spt.Tanggal_Berangkat,
 		Tanggal_Kembali:   spt.Tanggal_Kembali,
 		Lama_Perjalanan:   spt.Lama_Perjalanan,
-		Pejabat_Pemberi:   spt.Pejabat_Pemberi,
+		Tahun:             spt.Tahun,
+		PejabatId:         spt.PejabatId,
 		Status:            spt.Status,
 		StatusSppd:        spt.StatusSppd,
 		File_Surat_Tugas:  spt.File_Surat_Tugas,

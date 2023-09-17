@@ -7,10 +7,12 @@ type CreateSppdRequest struct {
 	PegawaiId        int    `json:"pegawaiId" binding:"required"`
 	Tempat_Berangkat string `json:"tempat_berangkat" binding:"required"`
 	Tempat_Tujuan    string `json:"tempat_tujuan" binding:"required"`
+	Tahun            string `json:"tahun"`
 	Tanggal_Sppd     string `json:"tanggal_sppd" binding:"required"`
 	Alat_Angkutan    string `json:"alat_angkutan" binding:"required"`
 	Instansi         string `json:"instansi" binding:"required"`
 	PejabatId        int    `json:"pejabatId" binding:"required"`
+	StatusKwitansi   int    `json:"statusKwitansi"`
 	SptId            int    `json:"sptId" binding:"required"`
 	UserId           int    `json:"userId" binding:"required"`
 }
@@ -22,10 +24,12 @@ type UpdateSppdRequest struct {
 	PegawaiId        int    `json:"pegawaiId"`
 	Tempat_Berangkat string `json:"tempat_berangkat"`
 	Tempat_Tujuan    string `json:"tempat_tujuan"`
+	Tahun            string `json:"tahun"`
 	Tanggal_Sppd     string `json:"tanggal_sppd"`
 	Alat_Angkutan    string `json:"alat_angkutan"`
 	Instansi         string `json:"instansi"`
 	PejabatId        int    `json:"pejabatId"`
+	StatusKwitansi   int    `json:"statusKwitansi"`
 	SptId            int    `json:"sptId"`
 	UserId           int    `json:"userId"`
 }

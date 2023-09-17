@@ -56,6 +56,34 @@ func (c *programController) GetProgram(cntx *gin.Context) {
 	cntx.JSON(http.StatusOK, programResponse)
 }
 
+func (c *programController) GetProgramBySearch(cntx *gin.Context) {
+	var whereClauseString = cntx.Request.URL.Query()
+	var whereClauseInterface = map[string]interface{}{}
+
+	for k, v := range whereClauseString {
+		interfaceKey := k
+		interfaceVal := v
+
+		whereClauseInterface[interfaceKey] = interfaceVal
+	}
+
+	var programs, err = c.programService.FindBySearch(whereClauseInterface)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+	}
+
+	var programsResponse []responses.ProgramResponse
+
+	for _, program := range programs {
+		var programResponse = helper.ConvertToProgramResponse(program)
+		programsResponse = append(programsResponse, programResponse)
+	}
+
+	cntx.JSON(http.StatusOK, programsResponse)
+}
+
 func (c *programController) CreateProgram(cntx *gin.Context) {
 	var programRequest request.CreateProgramRequest
 

@@ -11,7 +11,8 @@ type CreateSptRequest struct {
 	Tanggal_Berangkat string `json:"tanggal_berangkat" binding:"required"`
 	Tanggal_Kembali   string `json:"tanggal_kembali" binding:"required"`
 	Lama_Perjalanan   string `json:"lama_perjalanan" binding:"required"`
-	Pejabat_Pemberi   string `json:"pejabat_pemberi" binding:"required"`
+	Tahun             string `json:"tahun"`
+	PejabatId         int    `json:"pejabatId" binding:"required"`
 	Status            string `json:"status"`
 	File_Surat_Tugas  string `json:"file_surat_tugas"`
 	UserId            int    `json:"userId"`
@@ -28,7 +29,8 @@ type UpdateSptRequest struct {
 	Tanggal_Berangkat string `json:"tanggal_berangkat"`
 	Tanggal_Kembali   string `json:"tanggal_kembali"`
 	Lama_Perjalanan   string `json:"lama_perjalanan"`
-	Pejabat_Pemberi   string `json:"pejabat_pemberi"`
+	Tahun             string `json:"tahun"`
+	PejabatId         int    `json:"pejabatId"`
 	Status            string `json:"status"`
 	StatusSppd        int    `json:"statusSppd"`
 	File_Surat_Tugas  string `json:"file_surat_tugas"`

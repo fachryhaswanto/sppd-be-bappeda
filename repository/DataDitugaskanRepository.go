@@ -13,6 +13,8 @@ type DataDitugaskanRepository interface {
 	FindBySearch(whereClause map[string]interface{}) ([]model.DataDitugaskan, error)
 	FindByPegawaiId(pegawaiId int) ([]model.DataDitugaskan, error)
 	CountDataBySptId(sptId int) (int64, error)
+	CountDataByPegawaiId(dataPegawai []model.Pegawai) []int64
+	CountDataBySearch(whereClause map[string]interface{}) (int64, error)
 	Create(dataDitugaskan []model.DataDitugaskan) ([]model.DataDitugaskan, error)
 	UpdateStatus(sptId int, pegawaiId int, value int) error
 	Delete(dataDitugaskans []model.DataDitugaskan) ([]model.DataDitugaskan, error)
@@ -71,6 +73,28 @@ func (r *dataDitugaskanRepository) CountDataBySptId(sptId int) (int64, error) {
 	var count int64
 
 	var err = r.db.Model(&dataDitugaskan).Where("sptId = ?", sptId).Count(&count).Error
+
+	return count, err
+}
+
+func (r *dataDitugaskanRepository) CountDataByPegawaiId(dataPegawai []model.Pegawai) []int64 {
+	var arrJumlahPerjalanan []int64
+	var jumlahPerjalanan int64
+
+	for _, data := range dataPegawai {
+		r.db.Table("data_ditugaskans").Where("pegawaiId = ?", data.Id).Count(&jumlahPerjalanan)
+
+		arrJumlahPerjalanan = append(arrJumlahPerjalanan, jumlahPerjalanan)
+	}
+
+	return arrJumlahPerjalanan
+}
+
+func (r *dataDitugaskanRepository) CountDataBySearch(whereClause map[string]interface{}) (int64, error) {
+	var dataDitugaskan model.DataDitugaskan
+	var count int64
+
+	var err = r.db.Model(&dataDitugaskan).Where(whereClause).Count(&count).Error
 
 	return count, err
 }

@@ -7,7 +7,9 @@ import (
 	"sppd/helper"
 	"sppd/model"
 	"sppd/request"
+	"sppd/responses"
 	"sppd/service"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -21,6 +23,25 @@ type userController struct {
 
 func NewUserController(userService service.UserService) *userController {
 	return &userController{userService}
+}
+
+func (c *userController) GetUsers(cntx *gin.Context) {
+	var users, err = c.userService.FindAll()
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+	}
+
+	var usersResponse []responses.UserResponse
+
+	for _, user := range users {
+		var userResponse = helper.ConvertToUserResponse(user)
+		usersResponse = append(usersResponse, userResponse)
+	}
+
+	cntx.JSON(http.StatusOK, usersResponse)
+
 }
 
 func (c *userController) GetUser(cntx *gin.Context) {
@@ -40,6 +61,40 @@ func (c *userController) GetUser(cntx *gin.Context) {
 	cntx.JSON(http.StatusOK, gin.H{
 		"data": userResponse,
 	})
+}
+
+func (c *userController) UpdateUser(cntx *gin.Context) {
+	var userRequest request.UpdateUserRequest
+
+	var err = cntx.ShouldBindJSON(&userRequest)
+	if err != nil {
+		var errorMessages = []string{}
+
+		for _, e := range err.(validator.ValidationErrors) {
+			var errorMessage = fmt.Sprintf("Error on field %s, condition : %s", e.Field(), e.ActualTag())
+			errorMessages = append(errorMessages, errorMessage)
+		}
+
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": errorMessages,
+		})
+		return
+	}
+
+	var idString = cntx.Param("id")
+	var id, _ = strconv.Atoi(idString)
+
+	user, err := c.userService.Update(id, userRequest)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"errors": cntx.Error(err),
+		})
+		return
+	}
+
+	var userResponse = helper.ConvertToUserResponse(user)
+
+	cntx.JSON(http.StatusOK, userResponse)
 }
 
 func (c *userController) LoginUser(cntx *gin.Context) {
@@ -98,7 +153,7 @@ func (c *userController) LoginUser(cntx *gin.Context) {
 	//send cookies back
 	cntx.SetSameSite(http.SameSiteLaxMode)
 	//false on secure (6th parameter) maybe want to change it to "true" when it goes online
-	cntx.SetCookie("sppd-cookie", accessTokenString, 3600*5, "", "", false, true)
+	cntx.SetCookie("sppd-cookie", accessTokenString, 10800, "", "", false, true)
 
 	user.Password = ""
 	var userResponse = helper.ConvertToUserResponse(user)

@@ -56,6 +56,34 @@ func (c *subKegiatanController) GetSubKegiatan(cntx *gin.Context) {
 	cntx.JSON(http.StatusOK, subKegiatanResponse)
 }
 
+func (c *subKegiatanController) GetSubKegiatanBySearch(cntx *gin.Context) {
+	var whereClauseString = cntx.Request.URL.Query()
+	var whereClauseInterface = map[string]interface{}{}
+
+	for k, v := range whereClauseString {
+		interfaceKey := k
+		interfaceVal := v
+
+		whereClauseInterface[interfaceKey] = interfaceVal
+	}
+
+	var subKegiatans, err = c.subKegiatanService.FindBySearch(whereClauseInterface)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+	}
+
+	var subKegiatansResponse []responses.SubKegiatanResponse
+
+	for _, subKegiatan := range subKegiatans {
+		var subKegiatanResponse = helper.ConvertToSubKegiatanResponse(subKegiatan)
+		subKegiatansResponse = append(subKegiatansResponse, subKegiatanResponse)
+	}
+
+	cntx.JSON(http.StatusOK, subKegiatansResponse)
+}
+
 func (c *subKegiatanController) CreateSubKegiatan(cntx *gin.Context) {
 	var subKegiatanRequest request.CreateSubKegiatanRequest
 

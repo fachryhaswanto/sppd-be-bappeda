@@ -52,10 +52,6 @@ func main() {
 	var pejabatService = service.NewPejabatService(pejabatRepository)
 	var pejabatController = controller.NewPejabatController(pejabatService)
 
-	var pegawaiRepository = repository.NewPegawaiRepository(config.DB)
-	var pegawaiService = service.NewPegawaiService(pegawaiRepository)
-	var pegawaiController = controller.NewPegawaiController(pegawaiService)
-
 	var programRepository = repository.NewProgramRepository(config.DB)
 	var programService = service.NewProgramService(programRepository)
 	var programController = controller.NewProgramController(programService)
@@ -84,16 +80,28 @@ func main() {
 	var dataDitugaskanService = service.NewDataDitugaskanService(dataDitugaskanRepository, sptRepository)
 	var dataDitugaskanController = controller.NewDataDitugaskanController(dataDitugaskanService)
 
+	var pegawaiRepository = repository.NewPegawaiRepository(config.DB)
+	var pegawaiService = service.NewPegawaiService(pegawaiRepository)
+	var pegawaiController = controller.NewPegawaiController(pegawaiService, dataDitugaskanService)
+
 	var dataPengikutRepository = repository.NewDataPengikutRepository(config.DB)
 	var dataPengikutService = service.NewDataPengikutService(dataPengikutRepository)
 	var dataPengikutController = controller.NewDataPengikutController(dataPengikutService)
+
+	var kwitansiRepository = repository.NewKwitansiRepository(config.DB)
+	var kwitansiService = service.NewKwitansiService(kwitansiRepository)
+	var kwitansiController = controller.NewKwitansiController(kwitansiService)
+
+	var rincianKwitansiRepository = repository.NewRincianKwitansiRepository(config.DB)
+	var rincianKwitansiService = service.NewRincianKwitansiService(rincianKwitansiRepository)
+	var rincianKwitansiController = controller.NewRincianKwitansiController(rincianKwitansiService)
 
 	var server = gin.Default()
 
 	server.MaxMultipartMemory = 5 << 20
 
 	server.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowOrigins:     []string{"http://localhost:3000", "https://www.siperjadin.online", "https://siperjadin.online"},
 		AllowCredentials: true,
 		AllowMethods:     []string{"POST", "PUT", "DELETE", "GET", "PATCH"},
 		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Access-Control-Allow-Origin", "access-control-allow-origin, access-control-allow-headers", "Content-Type", "Accept", "Origin", "cookie-sppd", "Access-Control-Allow-Credentials"},
@@ -102,6 +110,9 @@ func main() {
 	server.GET("/auth/session", middleware.CheckAuth, userController.Validate)
 	server.POST("/auth/login", userController.LoginUser)
 	server.POST("/auth/logout", userController.LogoutUser)
+
+	server.GET("/user", middleware.CheckAuth, userController.GetUsers)
+	server.PATCH("/user/:id", middleware.CheckAuth, userController.UpdateUser)
 
 	server.GET("/kabupaten", middleware.CheckAuth, kabupatenController.GetKabupatens)
 	server.GET("/kabupaten/:id", middleware.CheckAuth, kabupatenController.GetKabupaten)
@@ -133,6 +144,7 @@ func main() {
 	server.GET("/pegawai/:id", middleware.CheckAuth, pegawaiController.GetPegawai)
 	server.GET("/pegawai/nama/:name", middleware.CheckAuth, pegawaiController.GetPegawaiByName)
 	server.GET("/pegawai/search", middleware.CheckAuth, pegawaiController.GetPegawaisBySearch)
+	server.GET("/pegawai/jumlahperjalanan", middleware.CheckAuth, pegawaiController.GetJumlahPerjalanan)
 	server.POST("/pegawai", middleware.CheckAuth, pegawaiController.CreatePegawai)
 	server.PATCH("/pegawai/:id", middleware.CheckAuth, pegawaiController.UpdatePegawai)
 	server.PATCH("/pegawai/batch", middleware.CheckAuth, pegawaiController.UpdateBatchPegawaiStatusPerjalanan)
@@ -140,18 +152,21 @@ func main() {
 
 	server.GET("/program", middleware.CheckAuth, programController.GetPrograms)
 	server.GET("/program/:id", middleware.CheckAuth, programController.GetProgram)
+	server.GET("/program/search", middleware.CheckAuth, programController.GetProgramBySearch)
 	server.POST("/program", middleware.CheckAuth, programController.CreateProgram)
 	server.PATCH("/program/:id", middleware.CheckAuth, programController.UpdateProgram)
 	server.DELETE("/program/:id", middleware.CheckAuth, programController.DeleteProgram)
 
 	server.GET("/kegiatan", middleware.CheckAuth, kegiatanController.GetKegiatans)
 	server.GET("/kegiatan/:id", middleware.CheckAuth, kegiatanController.GetKegiatan)
+	server.GET("/kegiatan/search", middleware.CheckAuth, kegiatanController.GetKegiatanBySearch)
 	server.POST("/kegiatan", middleware.CheckAuth, kegiatanController.CreateKegiatan)
 	server.PATCH("/kegiatan/:id", middleware.CheckAuth, kegiatanController.UpdateKegiatan)
 	server.DELETE("/kegiatan/:id", middleware.CheckAuth, kegiatanController.DeleteKegiatan)
 
 	server.GET("/subkegiatan", middleware.CheckAuth, subKegiatanController.GetSubKegiatans)
 	server.GET("/subkegiatan/:id", middleware.CheckAuth, subKegiatanController.GetSubKegiatan)
+	server.GET("/subkegiatan/search", middleware.CheckAuth, subKegiatanController.GetSubKegiatanBySearch)
 	server.POST("/subkegiatan", middleware.CheckAuth, subKegiatanController.CreateSubKegiatan)
 	server.PATCH("/subkegiatan/:id", middleware.CheckAuth, subKegiatanController.UpdateSubKegiatan)
 	server.DELETE("/subkegiatan/:id", middleware.CheckAuth, subKegiatanController.DeleteSubKegiatan)
@@ -166,6 +181,7 @@ func main() {
 	server.GET("/spt/:id", middleware.CheckAuth, sptController.GetSpt)
 	server.GET("/spt/ditugaskan", middleware.CheckAuth, sptController.GetAllDitugaskan)
 	server.GET("/spt/search", middleware.CheckAuth, sptController.GetSptsBySearch)
+	server.GET("/spt/count/search", middleware.CheckAuth, sptController.CountDataSptBySearch)
 	server.POST("/spt", middleware.CheckAuth, sptController.CreateSpt)
 	server.PATCH("/spt/:id", middleware.CheckAuth, sptController.UpdateSpt)
 	server.PATCH("/spt/updatestatus/:id/:value", middleware.CheckAuth, sptController.UpdateStatusSppd)
@@ -175,9 +191,11 @@ func main() {
 	server.GET("/sppd/:id", middleware.CheckAuth, sppdController.GetSppd)
 	server.GET("/sppd/search", middleware.CheckAuth, sppdController.GetSppdBySearch)
 	server.GET("/sppd/count", middleware.CheckAuth, sppdController.CountDataBySptId)
+	server.GET("/sppd/count/search", middleware.CheckAuth, sppdController.CountDataBySearch)
 	server.POST("/sppd", middleware.CheckAuth, sppdController.CreateSppd)
 	server.PATCH("/sppd/:id", middleware.CheckAuth, sppdController.UpdateSppd)
 	server.PATCH("/sppd/updatebysptid/:sptid", middleware.CheckAuth, sppdController.UpdateSppdBySptId)
+	server.PATCH("/sppd/updatestatuskwitansi/:id/:value", middleware.CheckAuth, sppdController.UpdateStatusKwitansi)
 	server.DELETE("/sppd/:id", middleware.CheckAuth, sppdController.DeleteSppd)
 	server.DELETE("/sppd/sptid/:sptid", middleware.CheckAuth, sppdController.DeleteSppdBySptId)
 
@@ -185,6 +203,7 @@ func main() {
 	server.GET("/dataditugaskan/:id", middleware.CheckAuth, dataDitugaskanController.GetDataDitugaskan)
 	server.GET("/dataditugaskan/search", middleware.CheckAuth, dataDitugaskanController.GetDataDitugaskansBySearch)
 	server.GET("/dataditugaskan/count", middleware.CheckAuth, dataDitugaskanController.CountDataBySptId)
+	server.GET("/dataditugaskan/count/search", middleware.CheckAuth, dataDitugaskanController.CountDataBySearch)
 	server.POST("/dataditugaskan", middleware.CheckAuth, dataDitugaskanController.CreateDataDitugaskan)
 	server.PATCH("/dataditugaskan/updatestatus/:sptid/:value", middleware.CheckAuth, dataDitugaskanController.UpdateStatusSppd)
 	server.DELETE("/dataditugaskan/:sptid", middleware.CheckAuth, dataDitugaskanController.DeleteDataDitugaskan)
@@ -194,6 +213,26 @@ func main() {
 	server.GET("/datapengikut/search", middleware.CheckAuth, dataPengikutController.GetDataPengikutBySearch)
 	server.POST("/datapengikut", middleware.CheckAuth, dataPengikutController.CreateDataPengikut)
 	server.DELETE("/datapengikut/:sptid", middleware.CheckAuth, dataPengikutController.DeleteDataPengikut)
+
+	server.GET("/kwitansi", middleware.CheckAuth, kwitansiController.GetKwitansis)
+	server.GET("/kwitansi/:id", middleware.CheckAuth, kwitansiController.GetKwitansi)
+	server.GET("/kwitansi/search", middleware.CheckAuth, kwitansiController.GetKwitansiBySearch)
+	server.GET("/kwitansi/count/search", middleware.CheckAuth, kwitansiController.CountDataBySearch)
+	server.GET("/kwitansi/realisasi", middleware.CheckAuth, kwitansiController.SumTotalBayar)
+	server.POST("/kwitansi", middleware.CheckAuth, kwitansiController.CreateKwitansi)
+	server.PATCH("/kwitansi/:id", middleware.CheckAuth, kwitansiController.UpdateKwitansi)
+	server.PATCH("/kwitansi/totalbayar/:id", middleware.CheckAuth, kwitansiController.UpdateTotalBayarKwitansi)
+	server.DELETE("/kwitansi/:id", middleware.CheckAuth, kwitansiController.DeleteKwitansi)
+
+	server.GET("/rinciankwitansi", middleware.CheckAuth, rincianKwitansiController.GetRincianKwitansis)
+	server.GET("/rinciankwitansi/:id", middleware.CheckAuth, rincianKwitansiController.GetRincianKwitansi)
+	server.GET("/rinciankwitansi/search", middleware.CheckAuth, rincianKwitansiController.GetRincianKwitansiBySearch)
+	server.GET("/rinciankwitansi/count/search", middleware.CheckAuth, rincianKwitansiController.CountDataBySearch)
+	server.POST("/rinciankwitansi", middleware.CheckAuth, rincianKwitansiController.CreateRincianKwitansi)
+	server.PATCH("/rinciankwitansi/:id", middleware.CheckAuth, rincianKwitansiController.UpdateRincianKwitansi)
+	server.DELETE("/rinciankwitansi/:kwitansiId", middleware.CheckAuth, rincianKwitansiController.DeleteRincianKwitansi)
+
+	server.GET("/convertnumbertowords", middleware.CheckAuth, controller.NumberToWord)
 
 	server.POST("/upload/", controller.UploadFile)
 

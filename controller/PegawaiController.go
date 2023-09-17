@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"sppd/helper"
+	"sppd/model"
 	"sppd/request"
 	"sppd/responses"
 	"sppd/service"
@@ -14,11 +15,15 @@ import (
 )
 
 type pegawaiController struct {
-	pegawaiService service.PegawaiService
+	pegawaiService        service.PegawaiService
+	dataDitugaskanService service.DataDitugaskanService
 }
 
-func NewPegawaiController(pegawaiService service.PegawaiService) *pegawaiController {
-	return &pegawaiController{pegawaiService}
+func NewPegawaiController(pegawaiService service.PegawaiService, dataDitugaskanService service.DataDitugaskanService) *pegawaiController {
+	return &pegawaiController{
+		pegawaiService,
+		dataDitugaskanService,
+	}
 }
 
 func (c *pegawaiController) GetPegawais(cntx *gin.Context) {
@@ -98,7 +103,44 @@ func (c *pegawaiController) GetPegawaisBySearch(cntx *gin.Context) {
 	}
 
 	cntx.JSON(http.StatusOK, pegawaisResponse)
+}
 
+func (c *pegawaiController) GetJumlahPerjalanan(cntx *gin.Context) {
+	var userIdString = cntx.Query("userId")
+	var userId, _ = strconv.Atoi(userIdString)
+
+	var dataPegawai []model.Pegawai
+	var err error
+
+	if userIdString != "" {
+		var whereClauseInterface = map[string]interface{}{}
+		whereClauseInterface["userId"] = userId
+
+		dataPegawai, err = c.pegawaiService.FindBySearch(whereClauseInterface)
+		if err != nil {
+			cntx.JSON(http.StatusBadRequest, gin.H{
+				"error": cntx.Error(err),
+			})
+		}
+	} else {
+		dataPegawai, err = c.pegawaiService.FindAll()
+		if err != nil {
+			cntx.JSON(http.StatusBadRequest, gin.H{
+				"error": cntx.Error(err),
+			})
+		}
+	}
+
+	var jumlahPerjalanan = c.dataDitugaskanService.CountDataByPegawaiId(dataPegawai)
+
+	var jumlahPerjalananResponse []responses.JumlahPerjalananPegawaiResponse
+
+	for index, data := range dataPegawai {
+		var tempResponse = helper.ConvertToJumlahPerjalananPegawai(data, jumlahPerjalanan[index])
+		jumlahPerjalananResponse = append(jumlahPerjalananResponse, tempResponse)
+	}
+
+	cntx.JSON(http.StatusOK, jumlahPerjalananResponse)
 }
 
 func (c *pegawaiController) CreatePegawai(cntx *gin.Context) {

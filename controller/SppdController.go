@@ -93,9 +93,32 @@ func (c *sppdController) CountDataBySptId(cntx *gin.Context) {
 		cntx.JSON(http.StatusBadRequest, gin.H{
 			"error": cntx.Error(err),
 		})
+		return
 	}
 
 	cntx.JSON(http.StatusOK, jumlah)
+}
+
+func (c *sppdController) CountDataBySearch(cntx *gin.Context) {
+	var whereClauseString = cntx.Request.URL.Query()
+	var whereClauseInterface = map[string]interface{}{}
+
+	for k, v := range whereClauseString {
+		interfaceKey := k
+		interfaceVal := v
+
+		whereClauseInterface[interfaceKey] = interfaceVal
+	}
+
+	var count, err = c.sppdService.CountDataBySearch(whereClauseInterface)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+		return
+	}
+
+	cntx.JSON(http.StatusOK, count)
 }
 
 func (c *sppdController) CreateSppd(cntx *gin.Context) {
@@ -110,9 +133,12 @@ func (c *sppdController) CreateSppd(cntx *gin.Context) {
 			errorMessages = append(errorMessages, errorMessage)
 		}
 
+		fmt.Println(errorMessages)
+
 		cntx.JSON(http.StatusBadRequest, gin.H{
 			"error": errorMessages,
 		})
+
 		return
 	}
 
@@ -195,6 +221,22 @@ func (c *sppdController) UpdateSppdBySptId(cntx *gin.Context) {
 	var sppdRespone = helper.ConvertToSppdResponse(sppd)
 
 	cntx.JSON(http.StatusOK, sppdRespone)
+}
+
+func (c *sppdController) UpdateStatusKwitansi(cntx *gin.Context) {
+	var idString = cntx.Param("id")
+	var id, _ = strconv.Atoi(idString)
+
+	var valueString = cntx.Param("value")
+	var value, _ = strconv.Atoi(valueString)
+
+	var err = c.sppdService.UpdateStatusKwitansi(id, value)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, cntx.Error(err))
+		return
+	}
+
+	cntx.JSON(http.StatusOK, "data spt berhasil diperbarui")
 }
 
 func (c *sppdController) DeleteSppd(cntx *gin.Context) {

@@ -62,6 +62,7 @@ type Program struct {
 	Kode       string `gorm:"column:kode;not null"`
 	Pembebanan string `gorm:"column:pembebanan;not null"`
 	Program    string `gorm:"column:program;not null"`
+	Tahun      string `gorm:"column:tahun; not null"`
 }
 
 type Kegiatan struct {
@@ -70,6 +71,7 @@ type Kegiatan struct {
 	Program      Program
 	KodeKegiatan string `gorm:"column:kodeKegiatan;not null"`
 	NamaKegiatan string `gorm:"column:namaKegiatan;not null"`
+	Tahun        string `gorm:"column:tahun;not null"`
 }
 
 type SubKegiatan struct {
@@ -80,6 +82,7 @@ type SubKegiatan struct {
 	NamaSubKegiatan string `gorm:"column:namaSubKegiatan;not null"`
 	PejabatId       int    `gorm:"column:pejabatId;not null"`
 	Pejabat         Pejabat
+	Tahun           string `gorm:"column:tahun;not null"`
 }
 
 type Rekening struct {
@@ -102,7 +105,9 @@ type Spt struct {
 	Tanggal_Berangkat string `gorm:"column:tanggal_berangkat;not null"`
 	Tanggal_Kembali   string `gorm:"column:tanggal_kembali;not null"`
 	Lama_Perjalanan   string `gorm:"column:lama_perjalanan;not null"`
-	Pejabat_Pemberi   string `gorm:"column:pejabat_pemberi;not null"`
+	Tahun             string `gorm:"column:tahun;not null"`
+	PejabatId         int    `gorm:"column:pejabatId;not null"`
+	Pejabat           Pejabat
 	Status            string `gorm:"column:status; not null"`
 	StatusSppd        int    `gorm:"column:statusSppd;not null"`
 	File_Surat_Tugas  string `gorm:"column:file_surat_tugas"`
@@ -120,9 +125,11 @@ type Sppd struct {
 	Alat_Angkutan    string `gorm:"column:alat_angkutan;not null"`
 	Tempat_Berangkat string `gorm:"column:tempat_berangkat;not null"`
 	Tempat_Tujuan    string `gorm:"column:tempat_tujuan;not null"`
+	Tahun            string `gorm:"column:tahun;not null"`
 	Instansi         string `gorm:"column:instansi;not null"`
 	PejabatId        int    `gorm:"column:pejabatId;not null"`
 	Pejabat          Pejabat
+	StatusKwitansi   int `gorm:"column:statusKwitansi;not null"`
 	SptId            int `gorm:"column:sptId;not null"`
 	Spt              Spt
 	UserId           int `gorm:"column:userId;not null"`
@@ -147,6 +154,28 @@ type DataPengikut struct {
 	Pegawai   Pegawai
 	CreatedAt time.Time `gorm:"column:createdAt;not null"`
 	UpdatedAt time.Time `gorm:"column:updatedAt;not null"`
+}
+
+type Kwitansi struct {
+	Id            int `gorm:"column:id;not null;autoIncrement;primaryKey"`
+	SppdId        int `gorm:"column:sppdId;not null"`
+	Sppd          Sppd
+	NomorKwitansi string `gorm:"column:nomorKwitansi;not null"`
+	TanggalBayar  string `gorm:"column:tanggalBayar;not null"`
+	Keperluan     string `gorm:"column:keperluan;not null"`
+	TotalBayar    int    `gorm:"column:totalBayar;not null"`
+	Tahun         string `gorm:"column:tahun;not null"`
+	UserId        int    `gorm:"column:userId;not null"`
+}
+
+type RincianKwitansi struct {
+	Id          string `gorm:"column:id;not null;primaryKey"`
+	KwitansiId  int    `gorm:"column:kwitansiId;not null"`
+	Kwitansi    Kwitansi
+	NamaRincian string `gorm:"column:namaRincian;not null"`
+	JumlahBayar int    `gorm:"column:jumlahBayar;not null"`
+	Banyaknya   int    `gorm:"column:banyaknya;not null"`
+	HasilBayar  int    `gorm:"column:hasilBayar;not null"`
 }
 
 // type JoinSppdSpt struct {

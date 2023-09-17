@@ -9,6 +9,7 @@ import (
 type KegiatanRepository interface {
 	FindAll() ([]model.Kegiatan, error)
 	FindById(id int) (model.Kegiatan, error)
+	FindBySearch(whereClause map[string]interface{}) ([]model.Kegiatan, error)
 	Create(model.Kegiatan) (model.Kegiatan, error)
 	Update(model.Kegiatan) (model.Kegiatan, error)
 	Delete(model.Kegiatan) (model.Kegiatan, error)
@@ -38,6 +39,14 @@ func (r *kegiatanRepository) FindById(id int) (model.Kegiatan, error) {
 	return kegiatan, err
 }
 
+func (r *kegiatanRepository) FindBySearch(whereClause map[string]interface{}) ([]model.Kegiatan, error) {
+	var kegiatans []model.Kegiatan
+
+	var err = r.db.Where(whereClause).Model(&kegiatans).Preload("Program").Find(&kegiatans).Error
+
+	return kegiatans, err
+}
+
 func (r *kegiatanRepository) Create(kegiatan model.Kegiatan) (model.Kegiatan, error) {
 	var err = r.db.Create(&kegiatan).Error
 
@@ -49,6 +58,7 @@ func (r *kegiatanRepository) Update(kegiatan model.Kegiatan) (model.Kegiatan, er
 		ProgramId:    kegiatan.ProgramId,
 		KodeKegiatan: kegiatan.KodeKegiatan,
 		NamaKegiatan: kegiatan.NamaKegiatan,
+		Tahun:        kegiatan.Tahun,
 	}).Error
 
 	return kegiatan, err

@@ -57,10 +57,15 @@ func (c *dataDitugaskanController) GetDataDitugaskan(cntx *gin.Context) {
 }
 
 func (c *dataDitugaskanController) GetDataDitugaskansBySearch(cntx *gin.Context) {
+	var spt = cntx.Query("spt")
 	var whereClauseString = cntx.Request.URL.Query()
 	var whereClauseInterface = map[string]interface{}{}
 
 	for k, v := range whereClauseString {
+		if k == "spt" {
+			continue
+		}
+
 		interfaceKey := k
 		interfaceVal := v
 
@@ -74,14 +79,26 @@ func (c *dataDitugaskanController) GetDataDitugaskansBySearch(cntx *gin.Context)
 		})
 	}
 
-	var dataDitugaskansResponse []responses.DataDitugaskanResponse
+	if spt == "false" {
+		var dataDitugaskansResponse []responses.DataDitugaskanResponse
 
-	for _, dataDitugaskan := range dataDitugaskans {
-		var dataDitugaskanResponse = helper.ConvertToDataDitugaskanResponse(dataDitugaskan)
-		dataDitugaskansResponse = append(dataDitugaskansResponse, dataDitugaskanResponse)
+		for _, dataDitugaskan := range dataDitugaskans {
+			var dataDitugaskanResponse = helper.ConvertToDataDitugaskanResponse(dataDitugaskan)
+			dataDitugaskansResponse = append(dataDitugaskansResponse, dataDitugaskanResponse)
+		}
+
+		cntx.JSON(http.StatusOK, dataDitugaskansResponse)
+
+	} else {
+		var dataDitugaskansResponse []responses.DataDitugaskanSptResponse
+
+		for _, dataDitugaskan := range dataDitugaskans {
+			var dataDitugaskanResponse = helper.ConvertToDataDitugaskanSptResponse(dataDitugaskan)
+			dataDitugaskansResponse = append(dataDitugaskansResponse, dataDitugaskanResponse)
+		}
+
+		cntx.JSON(http.StatusOK, dataDitugaskansResponse)
 	}
-
-	cntx.JSON(http.StatusOK, dataDitugaskansResponse)
 
 }
 
@@ -90,6 +107,27 @@ func (c *dataDitugaskanController) CountDataBySptId(cntx *gin.Context) {
 	var sptId, _ = strconv.Atoi(sptIdString)
 
 	var jumlah, err = c.dataDitugaskanService.CountDataBySptId(sptId)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+	}
+
+	cntx.JSON(http.StatusOK, jumlah)
+}
+
+func (c *dataDitugaskanController) CountDataBySearch(cntx *gin.Context) {
+	var whereClauseString = cntx.Request.URL.Query()
+	var whereClauseInterface = map[string]interface{}{}
+
+	for k, v := range whereClauseString {
+		interfaceKey := k
+		interfaceVal := v
+
+		whereClauseInterface[interfaceKey] = interfaceVal
+	}
+
+	var jumlah, err = c.dataDitugaskanService.CountDataBySearch(whereClauseInterface)
 	if err != nil {
 		cntx.JSON(http.StatusBadRequest, gin.H{
 			"error": cntx.Error(err),

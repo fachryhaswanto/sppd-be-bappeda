@@ -14,8 +14,7 @@ import (
 func CheckAuth(cntx *gin.Context) {
 	var tokenString, err = cntx.Cookie("sppd-cookie")
 	if err != nil {
-		cntx.AbortWithStatus(http.StatusUnauthorized)
-		fmt.Println(err)
+		cntx.AbortWithStatus(http.StatusOK)
 		return
 	}
 
@@ -32,7 +31,7 @@ func CheckAuth(cntx *gin.Context) {
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if float64(time.Now().Unix()) > claims["exp"].(float64) {
-			cntx.AbortWithStatus(http.StatusUnauthorized)
+			cntx.AbortWithStatus(http.StatusOK)
 			return
 		}
 
@@ -47,7 +46,7 @@ func CheckAuth(cntx *gin.Context) {
 		cntx.Set("user", user)
 
 	} else {
-		cntx.AbortWithStatus(http.StatusUnauthorized)
+		cntx.AbortWithStatus(http.StatusOK)
 		return
 	}
 

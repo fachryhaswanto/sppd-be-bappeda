@@ -9,6 +9,7 @@ import (
 type SubKegiatanService interface {
 	FindAll() ([]model.SubKegiatan, error)
 	FindById(id int) (model.SubKegiatan, error)
+	FindBySearch(whereClause map[string]interface{}) ([]model.SubKegiatan, error)
 	Create(subKegiatan request.CreateSubKegiatanRequest) (model.SubKegiatan, error)
 	Update(id int, subKegiatan request.UpdateSubKegiatanRequest) (model.SubKegiatan, error)
 	Delete(id int) (model.SubKegiatan, error)
@@ -34,12 +35,19 @@ func (s *subKegiatanService) FindById(id int) (model.SubKegiatan, error) {
 	return subKegiatan, err
 }
 
+func (s *subKegiatanService) FindBySearch(whereClause map[string]interface{}) ([]model.SubKegiatan, error) {
+	var subKegiatans, err = s.subKegiatanRepository.FindBySearch(whereClause)
+
+	return subKegiatans, err
+}
+
 func (s *subKegiatanService) Create(subKegiatanRequest request.CreateSubKegiatanRequest) (model.SubKegiatan, error) {
 	var subKegiatan = model.SubKegiatan{
 		KegiatanId:      subKegiatanRequest.KegiatanId,
 		KodeSubKegiatan: subKegiatanRequest.KodeSubKegiatan,
 		NamaSubKegiatan: subKegiatanRequest.NamaSubKegiatan,
 		PejabatId:       subKegiatanRequest.PejabatId,
+		Tahun:           subKegiatanRequest.Tahun,
 	}
 
 	newSubKegiatan, err := s.subKegiatanRepository.Create(subKegiatan)
@@ -54,6 +62,7 @@ func (s *subKegiatanService) Update(id int, subKegiatanRequest request.UpdateSub
 	subKegiatan.KodeSubKegiatan = subKegiatanRequest.KodeSubKegiatan
 	subKegiatan.NamaSubKegiatan = subKegiatanRequest.NamaSubKegiatan
 	subKegiatan.PejabatId = subKegiatanRequest.PejabatId
+	subKegiatan.Tahun = subKegiatanRequest.Tahun
 
 	updatedSubKegiatan, err := s.subKegiatanRepository.Update(subKegiatan)
 

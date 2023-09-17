@@ -11,6 +11,7 @@ type SptService interface {
 	FindById(id int) (model.Spt, error)
 	FindBySearch(whereClause map[string]interface{}) ([]model.Spt, error)
 	FindAllDitugaskan() ([]model.Spt, error)
+	CountDataSptBySearch(whereClause map[string]interface{}) (int64, error)
 	Create(spt request.CreateSptRequest) (model.Spt, error)
 	Update(id int, spt request.UpdateSptRequest) (model.Spt, error)
 	UpdateStatusSppd(id int, value int) error
@@ -49,7 +50,15 @@ func (s *sptService) FindAllDitugaskan() ([]model.Spt, error) {
 	return ditugaskan, err
 }
 
+func (s *sptService) CountDataSptBySearch(whereClause map[string]interface{}) (int64, error) {
+	var count, err = s.sptRepository.CountDataSptBySearch(whereClause)
+
+	return count, err
+}
+
 func (s *sptService) Create(sptRequest request.CreateSptRequest) (model.Spt, error) {
+	var tahun = sptRequest.Tanggal_Spt[:4]
+
 	var spt = model.Spt{
 		Jenis:             sptRequest.Jenis,
 		Template:          sptRequest.Template,
@@ -61,7 +70,8 @@ func (s *sptService) Create(sptRequest request.CreateSptRequest) (model.Spt, err
 		Tanggal_Berangkat: sptRequest.Tanggal_Berangkat,
 		Tanggal_Kembali:   sptRequest.Tanggal_Kembali,
 		Lama_Perjalanan:   sptRequest.Lama_Perjalanan,
-		Pejabat_Pemberi:   sptRequest.Pejabat_Pemberi,
+		Tahun:             tahun,
+		PejabatId:         sptRequest.PejabatId,
 		Status:            "Belum Kembali",
 		StatusSppd:        0,
 		File_Surat_Tugas:  sptRequest.File_Surat_Tugas,
@@ -74,6 +84,7 @@ func (s *sptService) Create(sptRequest request.CreateSptRequest) (model.Spt, err
 }
 
 func (s *sptService) Update(id int, sptRequest request.UpdateSptRequest) (model.Spt, error) {
+	var tahun = sptRequest.Tanggal_Spt[:4]
 	var spt, err = s.sptRepository.FindById(id)
 
 	spt.Jenis = sptRequest.Jenis
@@ -86,7 +97,8 @@ func (s *sptService) Update(id int, sptRequest request.UpdateSptRequest) (model.
 	spt.Tanggal_Berangkat = sptRequest.Tanggal_Berangkat
 	spt.Tanggal_Kembali = sptRequest.Tanggal_Kembali
 	spt.Lama_Perjalanan = sptRequest.Lama_Perjalanan
-	spt.Pejabat_Pemberi = sptRequest.Pejabat_Pemberi
+	spt.Tahun = tahun
+	spt.PejabatId = sptRequest.PejabatId
 	spt.Status = sptRequest.Status
 	spt.StatusSppd = sptRequest.StatusSppd
 	spt.File_Surat_Tugas = sptRequest.File_Surat_Tugas

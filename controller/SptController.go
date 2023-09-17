@@ -104,6 +104,27 @@ func (c *sptController) GetSptsBySearch(cntx *gin.Context) {
 	cntx.JSON(http.StatusOK, sptsResponse)
 }
 
+func (c *sptController) CountDataSptBySearch(cntx *gin.Context) {
+	var whereClauseString = cntx.Request.URL.Query()
+	var whereClauseInterface = map[string]interface{}{}
+
+	for k, v := range whereClauseString {
+		interfaceKey := k
+		interfaceVal := v
+
+		whereClauseInterface[interfaceKey] = interfaceVal
+	}
+
+	var count, err = c.sptService.CountDataSptBySearch(whereClauseInterface)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+	}
+
+	cntx.JSON(http.StatusOK, count)
+}
+
 func (c *sptController) CreateSpt(cntx *gin.Context) {
 	var sptRequest request.CreateSptRequest
 
