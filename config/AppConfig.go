@@ -1,12 +1,11 @@
 package config
 
 type AppConfig struct {
-	DatabaseHost string
-	// DatabaseURL string
+	DatabaseUsername string
 	DatabasePassword string
 	DatabasePort     string
+	DatabaseHost     string
 	DatabaseName     string
 	AppPort          string
-	AllowOrigins     string
 	SecretKey        string
 }

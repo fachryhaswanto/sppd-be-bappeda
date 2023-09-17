@@ -23,11 +23,10 @@ func main() {
 	}
 
 	appConfig.DatabaseHost = os.Getenv("APP_DATABASE_HOST")
-	// appConfig.DatabaseURL = os.Getenv("DATABASE_URL")
+	appConfig.DatabaseUsername = os.Getenv("APP_DATABASE_USERNAME")
 	appConfig.DatabasePassword = os.Getenv("APP_DATABASE_PASSWORD")
 	appConfig.DatabasePort = os.Getenv("APP_DATABASE_PORT")
 	appConfig.DatabaseName = os.Getenv("APP_DATABASE_NAME")
-	appConfig.AllowOrigins = os.Getenv("APP_ALLOW_ORIGIN")
 	appConfig.AppPort = os.Getenv("APP_PORT")
 
 	config.ConnectDB(appConfig)
