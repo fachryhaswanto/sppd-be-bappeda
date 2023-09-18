@@ -98,6 +98,8 @@ type SubKegiatanResponse struct {
 	NamaSubKegiatan string           `json:"namaSubKegiatan"`
 	PejabatId       int              `json:"pejabatId"`
 	Pejabat         PejabatResponse  `json:"pejabat"`
+	BidangId        int              `json:"bidangId"`
+	Bidang          BidangResponse   `json:"bidang"`
 	Tahun           string           `json:"tahun"`
 }
 

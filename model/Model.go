@@ -82,6 +82,8 @@ type SubKegiatan struct {
 	NamaSubKegiatan string `gorm:"column:namaSubKegiatan;not null"`
 	PejabatId       int    `gorm:"column:pejabatId;not null"`
 	Pejabat         Pejabat
+	BidangId        int `gorm:"column:bidangId;not null"`
+	Bidang          Bidang
 	Tahun           string `gorm:"column:tahun;not null"`
 }
 

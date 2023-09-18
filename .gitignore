@@ -1,4 +1,2 @@
-.env.local
-docker-compose.yml
 test.http
 .env

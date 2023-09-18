@@ -22,7 +22,6 @@ func ConnectDB(appConfig AppConfig) {
 	// dbHost, dbPort, _ := net.SplitHostPort(dbConfig.Host)
 
 	// var dsn = "root:root@tcp(127.0.0.1:3306)/sppd-bappeda?charset=utf8mb4&parseTime=True&loc=Local"
-	// var dsn = dbUsername + ":" + dbPassword + "@tcp(" + dbHost + ":" + dbPort + ")/sppd?charset=utf8mb4&parseTime=True&loc=Local"
 	var dsn = appConfig.DatabaseUsername + ":" + appConfig.DatabasePassword + "@tcp(" + appConfig.DatabaseHost + ":" + appConfig.DatabasePort + ")/" + appConfig.DatabaseName + "?charset=utf8mb4&parseTime=True&loc=Local"
 
 	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})

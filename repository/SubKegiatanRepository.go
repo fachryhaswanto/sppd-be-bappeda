@@ -26,7 +26,7 @@ func NewSubKegiatanRepository(db *gorm.DB) *subKegiatanRepository {
 func (r *subKegiatanRepository) FindAll() ([]model.SubKegiatan, error) {
 	var subKegiatans []model.SubKegiatan
 
-	var err = r.db.Model(&subKegiatans).Preload("Kegiatan").Preload("Pejabat").Find(&subKegiatans).Error
+	var err = r.db.Model(&subKegiatans).Preload("Kegiatan").Preload("Pejabat").Preload("Bidang").Find(&subKegiatans).Error
 
 	return subKegiatans, err
 }
@@ -34,7 +34,7 @@ func (r *subKegiatanRepository) FindAll() ([]model.SubKegiatan, error) {
 func (r *subKegiatanRepository) FindById(id int) (model.SubKegiatan, error) {
 	var subKegiatan model.SubKegiatan
 
-	var err = r.db.Model(&subKegiatan).Preload("Kegiatan").Preload("Pejabat").Take(&subKegiatan, id).Error
+	var err = r.db.Model(&subKegiatan).Preload("Kegiatan").Preload("Pejabat").Preload("Bidang").Take(&subKegiatan, id).Error
 
 	return subKegiatan, err
 }
@@ -42,7 +42,7 @@ func (r *subKegiatanRepository) FindById(id int) (model.SubKegiatan, error) {
 func (r *subKegiatanRepository) FindBySearch(whereClause map[string]interface{}) ([]model.SubKegiatan, error) {
 	var subKegiatans []model.SubKegiatan
 
-	var err = r.db.Where(whereClause).Model(&subKegiatans).Preload("Kegiatan").Preload("Pejabat").Find(&subKegiatans).Error
+	var err = r.db.Where(whereClause).Model(&subKegiatans).Preload("Kegiatan").Preload("Pejabat").Preload("Bidang").Find(&subKegiatans).Error
 
 	return subKegiatans, err
 }
@@ -59,6 +59,7 @@ func (r *subKegiatanRepository) Update(subKegiatan model.SubKegiatan) (model.Sub
 		KodeSubKegiatan: subKegiatan.KodeSubKegiatan,
 		NamaSubKegiatan: subKegiatan.NamaSubKegiatan,
 		PejabatId:       subKegiatan.PejabatId,
+		BidangId:        subKegiatan.BidangId,
 		Tahun:           subKegiatan.Tahun,
 	}).Error
 

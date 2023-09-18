@@ -47,6 +47,7 @@ func (s *subKegiatanService) Create(subKegiatanRequest request.CreateSubKegiatan
 		KodeSubKegiatan: subKegiatanRequest.KodeSubKegiatan,
 		NamaSubKegiatan: subKegiatanRequest.NamaSubKegiatan,
 		PejabatId:       subKegiatanRequest.PejabatId,
+		BidangId:        subKegiatanRequest.BidangId,
 		Tahun:           subKegiatanRequest.Tahun,
 	}
 
@@ -62,6 +63,7 @@ func (s *subKegiatanService) Update(id int, subKegiatanRequest request.UpdateSub
 	subKegiatan.KodeSubKegiatan = subKegiatanRequest.KodeSubKegiatan
 	subKegiatan.NamaSubKegiatan = subKegiatanRequest.NamaSubKegiatan
 	subKegiatan.PejabatId = subKegiatanRequest.PejabatId
+	subKegiatan.BidangId = subKegiatanRequest.BidangId
 	subKegiatan.Tahun = subKegiatanRequest.Tahun
 
 	updatedSubKegiatan, err := s.subKegiatanRepository.Update(subKegiatan)
