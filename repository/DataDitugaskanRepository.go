@@ -11,7 +11,7 @@ type DataDitugaskanRepository interface {
 	FindById(id int) (model.DataDitugaskan, error)
 	FindBySptId(sptId int) ([]model.DataDitugaskan, error)
 	FindBySearch(whereClause map[string]interface{}) ([]model.DataDitugaskan, error)
-	FindByPegawaiId(pegawaiId int) ([]model.DataDitugaskan, error)
+	FindPengikut(pegawaiId, sptId int) ([]model.DataDitugaskan, error)
 	CountDataBySptId(sptId int) (int64, error)
 	CountDataByPegawaiId(dataPegawai []model.Pegawai) []int64
 	CountDataBySearch(whereClause map[string]interface{}) (int64, error)
@@ -60,10 +60,10 @@ func (r *dataDitugaskanRepository) FindBySearch(whereClause map[string]interface
 	return dataDitugaskans, err
 }
 
-func (r *dataDitugaskanRepository) FindByPegawaiId(pegawaiId int) ([]model.DataDitugaskan, error) {
+func (r *dataDitugaskanRepository) FindPengikut(pegawaiId, sptId int) ([]model.DataDitugaskan, error) {
 	var dataDitugaskans []model.DataDitugaskan
 
-	var err = r.db.Where("pegawaiId = ?", pegawaiId).Model(&dataDitugaskans).Preload("Spt").Preload("Pegawai.Bidang").Find(&dataDitugaskans).Error
+	var err = r.db.Where("pegawaiId != ? and sptId = ?", pegawaiId, sptId).Model(&dataDitugaskans).Preload("Spt").Preload("Pegawai.Bidang").Find(&dataDitugaskans).Error
 
 	return dataDitugaskans, err
 }

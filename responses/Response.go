@@ -212,6 +212,7 @@ type RincianKwitansiResponse struct {
 	Id          string           `json:"id"`
 	KwitansiId  int              `json:"kwitansiId"`
 	Kwitansi    KwitansiResponse `json:"kwitansi"`
+	Jenis       string           `json:"jenis"`
 	NamaRincian string           `json:"namaRincian"`
 	JumlahBayar int              `json:"jumlahBayar"`
 	Banyaknya   int              `json:"banyaknya"`

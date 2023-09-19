@@ -62,6 +62,7 @@ func (s *rincianKwitansiService) Create(rincianKwitansiRequest []request.CreateR
 		var data = model.RincianKwitansi{
 			Id:          dataRincian.Id,
 			KwitansiId:  dataRincian.KwitansiId,
+			Jenis:       dataRincian.Jenis,
 			NamaRincian: dataRincian.NamaRincian,
 			JumlahBayar: dataRincian.JumlahBayar,
 			Banyaknya:   dataRincian.Banyaknya,
@@ -81,6 +82,7 @@ func (s *rincianKwitansiService) Update(id int, rincianKwitansiRequest request.U
 
 	rincianKwitansi.Id = rincianKwitansiRequest.Id
 	rincianKwitansi.KwitansiId = rincianKwitansiRequest.KwitansiId
+	rincianKwitansi.Jenis = rincianKwitansiRequest.Jenis
 	rincianKwitansi.NamaRincian = rincianKwitansiRequest.NamaRincian
 	rincianKwitansi.JumlahBayar = rincianKwitansiRequest.JumlahBayar
 	rincianKwitansi.Banyaknya = rincianKwitansiRequest.Banyaknya

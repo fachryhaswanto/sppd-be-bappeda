@@ -201,6 +201,7 @@ func main() {
 	server.GET("/dataditugaskan", middleware.CheckAuth, dataDitugaskanController.GetDataDitugaskans)
 	server.GET("/dataditugaskan/:id", middleware.CheckAuth, dataDitugaskanController.GetDataDitugaskan)
 	server.GET("/dataditugaskan/search", middleware.CheckAuth, dataDitugaskanController.GetDataDitugaskansBySearch)
+	server.GET("/dataditugaskan/pengikut", middleware.CheckAuth, dataDitugaskanController.GetPengikut)
 	server.GET("/dataditugaskan/count", middleware.CheckAuth, dataDitugaskanController.CountDataBySptId)
 	server.GET("/dataditugaskan/count/search", middleware.CheckAuth, dataDitugaskanController.CountDataBySearch)
 	server.POST("/dataditugaskan", middleware.CheckAuth, dataDitugaskanController.CreateDataDitugaskan)

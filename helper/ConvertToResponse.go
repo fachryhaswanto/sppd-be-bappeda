@@ -712,6 +712,7 @@ func ConvertToRincianKwitansiResponse(r model.RincianKwitansi) responses.Rincian
 			Tahun:         r.Kwitansi.Tahun,
 			UserId:        r.Kwitansi.UserId,
 		},
+		Jenis:       r.Jenis,
 		NamaRincian: r.NamaRincian,
 		JumlahBayar: r.JumlahBayar,
 		Banyaknya:   r.Banyaknya,

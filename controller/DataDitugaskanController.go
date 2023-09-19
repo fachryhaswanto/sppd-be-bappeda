@@ -99,7 +99,31 @@ func (c *dataDitugaskanController) GetDataDitugaskansBySearch(cntx *gin.Context)
 
 		cntx.JSON(http.StatusOK, dataDitugaskansResponse)
 	}
+}
 
+func (c *dataDitugaskanController) GetPengikut(cntx *gin.Context) {
+	var pegawaiIdString = cntx.Query("pegawaiId")
+	var pegawaiId, _ = strconv.Atoi(pegawaiIdString)
+
+	var sptIdString = cntx.Query("sptId")
+	var sptId, _ = strconv.Atoi(sptIdString)
+
+	var dataDitugaskans, err = c.dataDitugaskanService.FindPengikut(pegawaiId, sptId)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Data tidak ditemukan",
+		})
+		return
+	}
+
+	var dataDitugaskansResponse []responses.DataDitugaskanResponse
+
+	for _, dataDitugaskan := range dataDitugaskans {
+		var dataDitugaskanResponse = helper.ConvertToDataDitugaskanResponse(dataDitugaskan)
+		dataDitugaskansResponse = append(dataDitugaskansResponse, dataDitugaskanResponse)
+	}
+
+	cntx.JSON(http.StatusOK, dataDitugaskansResponse)
 }
 
 func (c *dataDitugaskanController) CountDataBySptId(cntx *gin.Context) {

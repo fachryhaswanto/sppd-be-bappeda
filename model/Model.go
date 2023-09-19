@@ -174,6 +174,7 @@ type RincianKwitansi struct {
 	Id          string `gorm:"column:id;not null;primaryKey"`
 	KwitansiId  int    `gorm:"column:kwitansiId;not null"`
 	Kwitansi    Kwitansi
+	Jenis       string `gorm:"column:jenis;not null"`
 	NamaRincian string `gorm:"column:namaRincian;not null"`
 	JumlahBayar int    `gorm:"column:jumlahBayar;not null"`
 	Banyaknya   int    `gorm:"column:banyaknya;not null"`

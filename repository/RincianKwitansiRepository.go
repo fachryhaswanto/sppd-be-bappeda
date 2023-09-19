@@ -81,6 +81,7 @@ func (r *rincianKwitansiRepository) Update(rincianKwitansi model.RincianKwitansi
 	var err = r.db.Model(&rincianKwitansi).Updates(model.RincianKwitansi{
 		Id:          rincianKwitansi.Id,
 		KwitansiId:  rincianKwitansi.KwitansiId,
+		Jenis:       rincianKwitansi.Jenis,
 		NamaRincian: rincianKwitansi.NamaRincian,
 		JumlahBayar: rincianKwitansi.JumlahBayar,
 		Banyaknya:   rincianKwitansi.Banyaknya,

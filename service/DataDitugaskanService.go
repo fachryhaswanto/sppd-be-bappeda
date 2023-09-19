@@ -16,6 +16,7 @@ type DataDitugaskanService interface {
 	FindById(id int) (model.DataDitugaskan, error)
 	FindBySptId(sptId int) ([]model.DataDitugaskan, error)
 	FindBySearch(whereClause map[string]interface{}) ([]model.DataDitugaskan, error)
+	FindPengikut(pegawaiId, sptId int) ([]model.DataDitugaskan, error)
 	CountDataBySptId(sptId int) (int64, error)
 	CountDataByPegawaiId(dataPegawai []model.Pegawai) []int64
 	CountDataBySearch(whereClause map[string]interface{}) (int64, error)
@@ -53,6 +54,12 @@ func (s *dataDitugaskanService) FindBySptId(sptId int) ([]model.DataDitugaskan, 
 
 func (s *dataDitugaskanService) FindBySearch(whereClause map[string]interface{}) ([]model.DataDitugaskan, error) {
 	var dataDitugaskans, err = s.dataDitugaskanRepository.FindBySearch(whereClause)
+
+	return dataDitugaskans, err
+}
+
+func (s *dataDitugaskanService) FindPengikut(pegawaiId, sptId int) ([]model.DataDitugaskan, error) {
+	var dataDitugaskans, err = s.dataDitugaskanRepository.FindPengikut(pegawaiId, sptId)
 
 	return dataDitugaskans, err
 }
