@@ -16,7 +16,8 @@ type DataDitugaskanRepository interface {
 	CountDataByPegawaiId(dataPegawai []model.Pegawai) []int64
 	CountDataBySearch(whereClause map[string]interface{}) (int64, error)
 	Create(dataDitugaskan []model.DataDitugaskan) ([]model.DataDitugaskan, error)
-	UpdateStatus(sptId int, pegawaiId int, value int) error
+	UpdateStatusSppd(sptId int, pegawaiId int, value int) error
+	UpdateStatusKwitansi(sptId int, pegawaiId int, value int) error
 	Delete(dataDitugaskans []model.DataDitugaskan) ([]model.DataDitugaskan, error)
 }
 
@@ -105,7 +106,7 @@ func (r *dataDitugaskanRepository) Create(dataDitugaskan []model.DataDitugaskan)
 	return dataDitugaskan, err
 }
 
-func (r *dataDitugaskanRepository) UpdateStatus(sptId int, pegawaiId int, value int) error {
+func (r *dataDitugaskanRepository) UpdateStatusSppd(sptId int, pegawaiId int, value int) error {
 	var dataDitugaskan model.DataDitugaskan
 	var err error
 
@@ -116,6 +117,23 @@ func (r *dataDitugaskanRepository) UpdateStatus(sptId int, pegawaiId int, value 
 	} else {
 		err = r.db.Model(&dataDitugaskan).Select("StatusSppd").Where("sptId = ?", sptId).Updates(model.DataDitugaskan{
 			StatusSppd: value,
+		}).Error
+	}
+
+	return err
+}
+
+func (r *dataDitugaskanRepository) UpdateStatusKwitansi(sptId int, pegawaiId int, value int) error {
+	var dataDitugaskan model.DataDitugaskan
+	var err error
+
+	if pegawaiId != 0 {
+		err = r.db.Model(&dataDitugaskan).Select("StatusKwitansi").Where("sptId = ? and pegawaiId = ?", sptId, pegawaiId).Updates(model.DataDitugaskan{
+			StatusKwitansi: value,
+		}).Error
+	} else {
+		err = r.db.Model(&dataDitugaskan).Select("StatusKwitansi").Where("sptId = ?", sptId).Updates(model.DataDitugaskan{
+			StatusKwitansi: value,
 		}).Error
 	}
 

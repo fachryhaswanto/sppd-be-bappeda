@@ -21,7 +21,8 @@ type DataDitugaskanService interface {
 	CountDataByPegawaiId(dataPegawai []model.Pegawai) []int64
 	CountDataBySearch(whereClause map[string]interface{}) (int64, error)
 	Create(dataDitugaskanRequest []request.CreateDataDitugaskanRequest) ([]model.DataDitugaskan, error)
-	UpdateStatus(sptId int, pegawaiId int, value int) error
+	UpdateStatusSppd(sptId int, pegawaiId int, value int) error
+	UpdateStatusKwitansi(sptId int, pegawaiId int, value int) error
 	Delete(sptId int) ([]model.DataDitugaskan, error)
 }
 
@@ -163,9 +164,10 @@ func (s *dataDitugaskanService) Create(dataDitugaskanRequests []request.CreateDa
 
 	for _, dataDitugaskan := range dataDitugaskanRequests {
 		var data = model.DataDitugaskan{
-			SptId:      dataDitugaskan.SptId,
-			PegawaiId:  dataDitugaskan.PegawaiId,
-			StatusSppd: 0,
+			SptId:          dataDitugaskan.SptId,
+			PegawaiId:      dataDitugaskan.PegawaiId,
+			StatusSppd:     0,
+			StatusKwitansi: 0,
 		}
 		dataDitugaskans = append(dataDitugaskans, data)
 	}
@@ -181,8 +183,14 @@ func (s *dataDitugaskanService) Create(dataDitugaskanRequests []request.CreateDa
 	return newDataDitugaskan, err
 }
 
-func (s *dataDitugaskanService) UpdateStatus(sptId int, pegawaiId int, value int) error {
-	var err = s.dataDitugaskanRepository.UpdateStatus(sptId, pegawaiId, value)
+func (s *dataDitugaskanService) UpdateStatusSppd(sptId int, pegawaiId int, value int) error {
+	var err = s.dataDitugaskanRepository.UpdateStatusSppd(sptId, pegawaiId, value)
+
+	return err
+}
+
+func (s *dataDitugaskanService) UpdateStatusKwitansi(sptId int, pegawaiId int, value int) error {
+	var err = s.dataDitugaskanRepository.UpdateStatusKwitansi(sptId, pegawaiId, value)
 
 	return err
 }

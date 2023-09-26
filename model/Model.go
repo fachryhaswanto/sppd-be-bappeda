@@ -138,14 +138,15 @@ type Sppd struct {
 }
 
 type DataDitugaskan struct {
-	Id         int `gorm:"column:id;not null;autoIncrement;primaryKey"`
-	SptId      int `gorm:"column:sptId;not null"`
-	Spt        Spt
-	PegawaiId  int `gorm:"column:pegawaiId;not null"`
-	Pegawai    Pegawai
-	StatusSppd int       `gorm:"column:statusSppd;not null"`
-	CreatedAt  time.Time `gorm:"column:createdAt;not null"`
-	UpdatedAt  time.Time `gorm:"column:updatedAt;not null"`
+	Id             int `gorm:"column:id;not null;autoIncrement;primaryKey"`
+	SptId          int `gorm:"column:sptId;not null"`
+	Spt            Spt
+	PegawaiId      int `gorm:"column:pegawaiId;not null"`
+	Pegawai        Pegawai
+	StatusSppd     int       `gorm:"column:statusSppd;not null"`
+	StatusKwitansi int       `gorm:"column:statusKwitansi;not null"`
+	CreatedAt      time.Time `gorm:"column:createdAt;not null"`
+	UpdatedAt      time.Time `gorm:"column:updatedAt;not null"`
 }
 
 type DataPengikut struct {
@@ -162,6 +163,8 @@ type Kwitansi struct {
 	Id            int `gorm:"column:id;not null;autoIncrement;primaryKey"`
 	SppdId        int `gorm:"column:sppdId;not null"`
 	Sppd          Sppd
+	PegawaiId     int `gorm:"column:pegawaiId;not null"`
+	Pegawai       Pegawai
 	NomorKwitansi string `gorm:"column:nomorKwitansi;not null"`
 	TanggalBayar  string `gorm:"column:tanggalBayar;not null"`
 	Keperluan     string `gorm:"column:keperluan;not null"`
@@ -179,6 +182,15 @@ type RincianKwitansi struct {
 	JumlahBayar int    `gorm:"column:jumlahBayar;not null"`
 	Banyaknya   int    `gorm:"column:banyaknya;not null"`
 	HasilBayar  int    `gorm:"column:hasilBayar;not null"`
+}
+
+type RincianKwitansiPenerbangan struct {
+	Id           string `gorm:"column:id;not null;primaryKey"`
+	KwitansiId   int    `gorm:"column:kwitansiId;not null"`
+	Kwitansi     Kwitansi
+	NamaMaskapai string `gorm:"column:namaMaskapai;not null"`
+	NomorTiket   string `gorm:"column:nomorTiket;not null"`
+	KodeBooking  string `gorm:"column:kodeBooking;not null"`
 }
 
 // type JoinSppdSpt struct {

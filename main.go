@@ -95,6 +95,10 @@ func main() {
 	var rincianKwitansiService = service.NewRincianKwitansiService(rincianKwitansiRepository)
 	var rincianKwitansiController = controller.NewRincianKwitansiController(rincianKwitansiService)
 
+	var rincianKwitansiPenerbanganRepository = repository.NewRincianKwitansiPenerbanganRepository(config.DB)
+	var rincianKwitansiPenerbanganService = service.NewRincianKwitansiPenerbanganService(rincianKwitansiPenerbanganRepository)
+	var rincianKwitansiPenerbanganController = controller.NewRincianKwitansiPenerbanganController(rincianKwitansiPenerbanganService)
+
 	var server = gin.Default()
 
 	server.MaxMultipartMemory = 5 << 20
@@ -206,6 +210,7 @@ func main() {
 	server.GET("/dataditugaskan/count/search", middleware.CheckAuth, dataDitugaskanController.CountDataBySearch)
 	server.POST("/dataditugaskan", middleware.CheckAuth, dataDitugaskanController.CreateDataDitugaskan)
 	server.PATCH("/dataditugaskan/updatestatus/:sptid/:value", middleware.CheckAuth, dataDitugaskanController.UpdateStatusSppd)
+	server.PATCH("/dataditugaskan/updatestatuskwitansi/:sptid/:value", middleware.CheckAuth, dataDitugaskanController.UpdateStatusKwitansi)
 	server.DELETE("/dataditugaskan/:sptid", middleware.CheckAuth, dataDitugaskanController.DeleteDataDitugaskan)
 
 	server.GET("/datapengikut", middleware.CheckAuth, dataPengikutController.GetDataPengikuts)
@@ -231,6 +236,14 @@ func main() {
 	server.POST("/rinciankwitansi", middleware.CheckAuth, rincianKwitansiController.CreateRincianKwitansi)
 	server.PATCH("/rinciankwitansi/:id", middleware.CheckAuth, rincianKwitansiController.UpdateRincianKwitansi)
 	server.DELETE("/rinciankwitansi/:kwitansiId", middleware.CheckAuth, rincianKwitansiController.DeleteRincianKwitansi)
+
+	server.GET("/rinciankwitansipenerbangan", middleware.CheckAuth, rincianKwitansiPenerbanganController.GetRincianKwitansiPenerbangans)
+	server.GET("/rinciankwitansipenerbangan/:id", middleware.CheckAuth, rincianKwitansiPenerbanganController.GetRincianKwitansiPenerbangan)
+	server.GET("/rinciankwitansipenerbangan/search", middleware.CheckAuth, rincianKwitansiPenerbanganController.GetRincianKwitansiPenerbanganBySearch)
+	server.GET("/rinciankwitansipenerbangan/count/search", middleware.CheckAuth, rincianKwitansiPenerbanganController.CountDataBySearch)
+	server.POST("/rinciankwitansipenerbangan", middleware.CheckAuth, rincianKwitansiPenerbanganController.CreateRincianKwitansiPenerbangan)
+	server.PATCH("/rinciankwitansipenerbangan/:id", middleware.CheckAuth, rincianKwitansiPenerbanganController.UpdateRincianKwitansiPenerbangan)
+	server.DELETE("/rinciankwitansipenerbangan/:kwitansiId", middleware.CheckAuth, rincianKwitansiPenerbanganController.DeleteRincianKwitansiPenerbangan)
 
 	server.GET("/convertnumbertowords", middleware.CheckAuth, controller.NumberToWord)
 

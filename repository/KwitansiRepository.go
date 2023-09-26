@@ -93,6 +93,7 @@ func (r *kwitansiRepository) Create(kwitansi model.Kwitansi) (model.Kwitansi, er
 func (r *kwitansiRepository) Update(kwitansi model.Kwitansi) (model.Kwitansi, error) {
 	var err = r.db.Model(&kwitansi).Select("totalBayar").Updates(model.Kwitansi{
 		SppdId:        kwitansi.SppdId,
+		PegawaiId:     kwitansi.PegawaiId,
 		NomorKwitansi: kwitansi.NomorKwitansi,
 		TanggalBayar:  kwitansi.TanggalBayar,
 		Keperluan:     kwitansi.Keperluan,

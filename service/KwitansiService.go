@@ -61,6 +61,7 @@ func (s *kwitansiService) Create(kwitansiRequest request.CreateKwitansiRequest) 
 
 	var kwitansi = model.Kwitansi{
 		SppdId:        kwitansiRequest.SppdId,
+		PegawaiId:     kwitansiRequest.PegawaiId,
 		NomorKwitansi: kwitansiRequest.NomorKwitansi,
 		TanggalBayar:  kwitansiRequest.TanggalBayar,
 		Keperluan:     kwitansiRequest.Keperluan,
@@ -79,6 +80,7 @@ func (s *kwitansiService) Update(id int, kwitansiRequest request.UpdateKwitansiR
 	var kwitansi, err = s.kwitansiRepository.FindById(id)
 
 	kwitansi.SppdId = kwitansiRequest.SppdId
+	kwitansi.PegawaiId = kwitansiRequest.PegawaiId
 	kwitansi.NomorKwitansi = kwitansiRequest.NomorKwitansi
 	kwitansi.TanggalBayar = kwitansiRequest.TanggalBayar
 	kwitansi.Keperluan = kwitansiRequest.Keperluan

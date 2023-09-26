@@ -205,7 +205,26 @@ func (c *dataDitugaskanController) UpdateStatusSppd(cntx *gin.Context) {
 	var pegawaiIdString = cntx.Query("pegawaiid")
 	var pegawaiId, _ = strconv.Atoi(pegawaiIdString)
 
-	var err = c.dataDitugaskanService.UpdateStatus(sptId, pegawaiId, value)
+	var err = c.dataDitugaskanService.UpdateStatusSppd(sptId, pegawaiId, value)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, cntx.Error(err))
+		return
+	}
+
+	cntx.JSON(http.StatusOK, "data ditugaskan berhasil diperbarui")
+}
+
+func (c *dataDitugaskanController) UpdateStatusKwitansi(cntx *gin.Context) {
+	var sptIdString = cntx.Param("sptid")
+	var sptId, _ = strconv.Atoi(sptIdString)
+
+	var valueString = cntx.Param("value")
+	var value, _ = strconv.Atoi(valueString)
+
+	var pegawaiIdString = cntx.Query("pegawaiId")
+	var pegawaiId, _ = strconv.Atoi(pegawaiIdString)
+
+	var err = c.dataDitugaskanService.UpdateStatusKwitansi(sptId, pegawaiId, value)
 	if err != nil {
 		cntx.JSON(http.StatusBadRequest, cntx.Error(err))
 		return

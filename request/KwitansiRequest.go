@@ -2,6 +2,7 @@ package request
 
 type CreateKwitansiRequest struct {
 	SppdId        int    `json:"sppdId" binding:"required"`
+	PegawaiId     int    `json:"pegawaiId" binding:"required"`
 	NomorKwitansi string `json:"nomorKwitansi" binding:"required"`
 	TanggalBayar  string `json:"tanggalBayar" binding:"required"`
 	Keperluan     string `json:"keperluan" binding:"required"`
@@ -12,6 +13,7 @@ type CreateKwitansiRequest struct {
 
 type UpdateKwitansiRequest struct {
 	SppdId        int    `json:"sppdId"`
+	PegawaiId     int    `json:"pegawaiId"`
 	NomorKwitansi string `json:"nomorKwitansi"`
 	TanggalBayar  string `json:"tanggalBayar"`
 	Keperluan     string `json:"keperluan"`

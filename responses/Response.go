@@ -154,15 +154,16 @@ type SppdResponse struct {
 }
 
 type DataDitugaskanResponse struct {
-	Id          int             `json:"id"`
-	SptId       int             `json:"sptId"`
-	Spt         SptResponse     `json:"spt"`
-	PegawaiId   int             `json:"pegawaiId"`
-	Pegawai     PegawaiResponse `json:"pegawai"`
-	NamaPegawai string          `json:"namaPegawai"`
-	StatusSppd  int             `json:"statusSppd"`
-	CreatedAt   time.Time       `json:"createdAt"`
-	UpdatedAt   time.Time       `json:"updatedAt"`
+	Id             int             `json:"id"`
+	SptId          int             `json:"sptId"`
+	Spt            SptResponse     `json:"spt"`
+	PegawaiId      int             `json:"pegawaiId"`
+	Pegawai        PegawaiResponse `json:"pegawai"`
+	NamaPegawai    string          `json:"namaPegawai"`
+	StatusSppd     int             `json:"statusSppd"`
+	StatusKwitansi int             `json:"statusKwitansi"`
+	CreatedAt      time.Time       `json:"createdAt"`
+	UpdatedAt      time.Time       `json:"updatedAt"`
 }
 
 type DataDitugaskanSptResponse struct {
@@ -197,15 +198,17 @@ type SemuaNamaDitugaskan struct {
 }
 
 type KwitansiResponse struct {
-	Id            int          `json:"id"`
-	SppdId        int          `json:"sppdId"`
-	Sppd          SppdResponse `json:"sppd"`
-	NomorKwitansi string       `json:"nomorKwitansi"`
-	TanggalBayar  string       `json:"tanggalBayar"`
-	Keperluan     string       `json:"keperluan"`
-	TotalBayar    int          `json:"totalBayar"`
-	Tahun         string       `json:"tahun"`
-	UserId        int          `json:"userId"`
+	Id            int             `json:"id"`
+	SppdId        int             `json:"sppdId"`
+	Sppd          SppdResponse    `json:"sppd"`
+	PegawaiId     int             `json:"pegawaiId"`
+	Pegawai       PegawaiResponse `json:"pegawai"`
+	NomorKwitansi string          `json:"nomorKwitansi"`
+	TanggalBayar  string          `json:"tanggalBayar"`
+	Keperluan     string          `json:"keperluan"`
+	TotalBayar    int             `json:"totalBayar"`
+	Tahun         string          `json:"tahun"`
+	UserId        int             `json:"userId"`
 }
 
 type RincianKwitansiResponse struct {
@@ -217,4 +220,13 @@ type RincianKwitansiResponse struct {
 	JumlahBayar int              `json:"jumlahBayar"`
 	Banyaknya   int              `json:"banyaknya"`
 	HasilBayar  int              `json:"hasilBayar"`
+}
+
+type RincianKwitansiPenerbanganResponse struct {
+	Id           string           `json:"id"`
+	KwitansiId   int              `json:"kwitansiId"`
+	Kwitansi     KwitansiResponse `json:"kwitansi"`
+	NamaMaskapai string           `json:"namaMaskapai"`
+	NomorTiket   string           `json:"nomorTiket"`
+	KodeBooking  string           `json:"kodeBooking"`
 }
