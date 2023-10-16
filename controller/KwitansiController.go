@@ -14,11 +14,13 @@ import (
 )
 
 type kwitansiController struct {
-	kwitansiService service.KwitansiService
+	kwitansiService                   service.KwitansiService
+	rincianKwitansiService            service.RincianKwitansiService
+	rincianKwitansiPenerbanganService service.RincianKwitansiPenerbanganService
 }
 
-func NewKwitansiController(kwitansiService service.KwitansiService) *kwitansiController {
-	return &kwitansiController{kwitansiService}
+func NewKwitansiController(kwitansiService service.KwitansiService, rincianKwitansiService service.RincianKwitansiService, rincianKwitansiPenerbanganService service.RincianKwitansiPenerbanganService) *kwitansiController {
+	return &kwitansiController{kwitansiService, rincianKwitansiService, rincianKwitansiPenerbanganService}
 }
 
 func (c *kwitansiController) GetKwitansis(cntx *gin.Context) {
@@ -238,4 +240,165 @@ func (c *kwitansiController) DeleteKwitansi(cntx *gin.Context) {
 	cntx.JSON(http.StatusOK, gin.H{
 		"status": "data berhasil dihapus",
 	})
+}
+
+func (c *kwitansiController) GenerateLaporan(cntx *gin.Context) {
+	var pegawaiIdString = cntx.Query("pegawaiId")
+	var pegawaiId, _ = strconv.Atoi(pegawaiIdString)
+
+	if pegawaiIdString == "" {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": "missing parameter pegawaiId",
+		})
+		return
+	}
+
+	var whereClause = map[string]interface{}{}
+	whereClause["pegawaiId"] = pegawaiId
+
+	var kwitansis, err = c.kwitansiService.FindBySearch(whereClause)
+	if err != nil {
+		cntx.JSON(http.StatusBadRequest, gin.H{
+			"error": cntx.Error(err),
+		})
+		return
+	}
+
+	var sumTotalBayar = c.kwitansiService.SumTotalBayar(whereClause)
+
+	for i := 0; i < len(kwitansis); i++ {
+		kwitansis[i].Sppd.Spt.Tanggal_Spt = helper.FormatDate(kwitansis[i].Sppd.Spt.Tanggal_Spt)
+		kwitansis[i].Sppd.Tanggal_Sppd = helper.FormatDate(kwitansis[i].Sppd.Tanggal_Sppd)
+		kwitansis[i].Sppd.Spt.Tanggal_Berangkat = helper.FormatDate(kwitansis[i].Sppd.Spt.Tanggal_Berangkat)
+		kwitansis[i].Sppd.Spt.Tanggal_Kembali = helper.FormatDate(kwitansis[i].Sppd.Spt.Tanggal_Kembali)
+	}
+
+	var laporanResponses []responses.LaporanResponse
+
+	for _, kwitansi := range kwitansis {
+		var tempResponse = helper.ConvertToLaporanResponse(kwitansi)
+		laporanResponses = append(laporanResponses, tempResponse)
+	}
+
+	for i := 0; i < len(laporanResponses); i++ {
+		laporanResponses[i].SumTotalBayar = helper.AddSeparatorInt64(sumTotalBayar)
+		laporanResponses[i].TotalBayar = helper.AddSeparator(kwitansis[i].TotalBayar)
+		var nomor = strconv.Itoa(i + 1)
+		laporanResponses[i].Nomor = nomor
+
+		var whereClause = make(map[string]interface{})
+
+		//uang harian
+		whereClause["kwitansiId"] = kwitansis[i].Id
+		whereClause["jenis"] = "Uang Harian"
+		var rincianKwitansisUangHarian, err = c.rincianKwitansiService.FindBySearch(whereClause)
+		laporanResponses[i].RincianKwitansiUangHarian = make([]responses.RincianKwitansi, len(rincianKwitansisUangHarian))
+
+		//uang representatif
+		whereClause["jenis"] = "Uang Representatif"
+		rincianKwitansiUangRepresentatif, err := c.rincianKwitansiService.FindBySearch(whereClause)
+		laporanResponses[i].RincianKwitansiUangRepresentatif = make([]responses.RincianKwitansi, len(rincianKwitansiUangRepresentatif))
+
+		if err != nil {
+			cntx.JSON(http.StatusBadRequest, gin.H{
+				"error": cntx.Error(err),
+			})
+			return
+		}
+
+		//biaya hotel
+		whereClause["jenis"] = "Biaya Hotel"
+		rincianKwitansiBiayaHotel, err := c.rincianKwitansiService.FindBySearch(whereClause)
+		laporanResponses[i].RincianKwitansiBiayaHotel = make([]responses.RincianKwitansi, len(rincianKwitansiBiayaHotel))
+
+		if err != nil {
+			cntx.JSON(http.StatusBadRequest, gin.H{
+				"error": cntx.Error(err),
+			})
+			return
+		}
+
+		//biaya tiket
+		whereClause["jenis"] = "Biaya Tiket"
+		rincianKwitansiBiayaTiket, err := c.rincianKwitansiService.FindBySearch(whereClause)
+		laporanResponses[i].RincianKwitansiBiayaTiket = make([]responses.RincianKwitansi, len(rincianKwitansiBiayaTiket))
+
+		if err != nil {
+			cntx.JSON(http.StatusBadRequest, gin.H{
+				"error": cntx.Error(err),
+			})
+			return
+		}
+
+		//transport bandara
+		whereClause["jenis"] = "Transport Bandara"
+		rincianKwitansiTransportBandara, err := c.rincianKwitansiService.FindBySearch(whereClause)
+		laporanResponses[i].RincianKwitansiTransportBandara = make([]responses.RincianKwitansi, len(rincianKwitansiTransportBandara))
+
+		if err != nil {
+			cntx.JSON(http.StatusBadRequest, gin.H{
+				"error": cntx.Error(err),
+			})
+			return
+		}
+
+		for j := 0; j < len(rincianKwitansisUangHarian); j++ {
+			laporanResponses[i].RincianKwitansiUangHarian[j].Id = rincianKwitansisUangHarian[j].Id
+			laporanResponses[i].RincianKwitansiUangHarian[j].KwitansiId = rincianKwitansisUangHarian[j].KwitansiId
+			laporanResponses[i].RincianKwitansiUangHarian[j].Jenis = rincianKwitansisUangHarian[j].Jenis
+			laporanResponses[i].RincianKwitansiUangHarian[j].HasilBayar = helper.AddSeparator(rincianKwitansisUangHarian[j].HasilBayar)
+		}
+
+		for j := 0; j < len(rincianKwitansiUangRepresentatif); j++ {
+			laporanResponses[i].RincianKwitansiUangRepresentatif[j].Id = rincianKwitansiUangRepresentatif[j].Id
+			laporanResponses[i].RincianKwitansiUangRepresentatif[j].KwitansiId = rincianKwitansiUangRepresentatif[j].KwitansiId
+			laporanResponses[i].RincianKwitansiUangRepresentatif[j].Jenis = rincianKwitansiUangRepresentatif[j].Jenis
+			laporanResponses[i].RincianKwitansiUangRepresentatif[j].HasilBayar = helper.AddSeparator(rincianKwitansiUangRepresentatif[j].HasilBayar)
+		}
+
+		for j := 0; j < len(rincianKwitansiBiayaHotel); j++ {
+			laporanResponses[i].RincianKwitansiBiayaHotel[j].Id = rincianKwitansiBiayaHotel[j].Id
+			laporanResponses[i].RincianKwitansiBiayaHotel[j].KwitansiId = rincianKwitansiBiayaHotel[j].KwitansiId
+			laporanResponses[i].RincianKwitansiBiayaHotel[j].Jenis = rincianKwitansiBiayaHotel[j].Jenis
+			laporanResponses[i].RincianKwitansiBiayaHotel[j].HasilBayar = helper.AddSeparator(rincianKwitansiBiayaHotel[j].HasilBayar)
+		}
+
+		for j := 0; j < len(rincianKwitansiBiayaTiket); j++ {
+			laporanResponses[i].RincianKwitansiBiayaTiket[j].Id = rincianKwitansiBiayaTiket[j].Id
+			laporanResponses[i].RincianKwitansiBiayaTiket[j].KwitansiId = rincianKwitansiBiayaTiket[j].KwitansiId
+			laporanResponses[i].RincianKwitansiBiayaTiket[j].Jenis = rincianKwitansiBiayaTiket[j].Jenis
+			laporanResponses[i].RincianKwitansiBiayaTiket[j].HasilBayar = helper.AddSeparator(rincianKwitansiBiayaTiket[j].HasilBayar)
+		}
+
+		for j := 0; j < len(rincianKwitansiTransportBandara); j++ {
+			laporanResponses[i].RincianKwitansiTransportBandara[j].Id = rincianKwitansiTransportBandara[j].Id
+			laporanResponses[i].RincianKwitansiTransportBandara[j].KwitansiId = rincianKwitansiTransportBandara[j].KwitansiId
+			laporanResponses[i].RincianKwitansiTransportBandara[j].Jenis = rincianKwitansiTransportBandara[j].Jenis
+			laporanResponses[i].RincianKwitansiTransportBandara[j].HasilBayar = helper.AddSeparator(rincianKwitansiTransportBandara[j].HasilBayar)
+		}
+
+		//rincian kwitansi penerbangan
+		rincianKwitansiPenerbangan, err := c.rincianKwitansiPenerbanganService.FindByKwitansiId(kwitansis[i].Id)
+		laporanResponses[i].RincianKwitansiPenerbangan = make([]responses.RincianKwitansiPenerbangan, len(rincianKwitansiPenerbangan))
+		if err != nil {
+			cntx.JSON(http.StatusBadRequest, gin.H{
+				"error": cntx.Error(err),
+			})
+			return
+		}
+
+		for j := 0; j < len(rincianKwitansiPenerbangan); j++ {
+			laporanResponses[i].RincianKwitansiPenerbangan[j].Id = rincianKwitansiPenerbangan[j].Id
+			laporanResponses[i].RincianKwitansiPenerbangan[j].KwitansiId = rincianKwitansiPenerbangan[j].KwitansiId
+			laporanResponses[i].RincianKwitansiPenerbangan[j].NamaMaskapai = rincianKwitansiPenerbangan[j].NamaMaskapai
+			laporanResponses[i].RincianKwitansiPenerbangan[j].NomorTiket = rincianKwitansiPenerbangan[j].NomorTiket
+			laporanResponses[i].RincianKwitansiPenerbangan[j].KodeBooking = rincianKwitansiPenerbangan[j].KodeBooking
+		}
+	}
+
+	cntx.JSON(http.StatusOK, laporanResponses)
+
+	// cntx.JSON(http.StatusOK, gin.H{
+	// 	"dataLaporan": laporanResponses,
+	// })
 }

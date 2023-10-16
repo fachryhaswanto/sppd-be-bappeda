@@ -87,10 +87,6 @@ func main() {
 	var dataPengikutService = service.NewDataPengikutService(dataPengikutRepository)
 	var dataPengikutController = controller.NewDataPengikutController(dataPengikutService)
 
-	var kwitansiRepository = repository.NewKwitansiRepository(config.DB)
-	var kwitansiService = service.NewKwitansiService(kwitansiRepository)
-	var kwitansiController = controller.NewKwitansiController(kwitansiService)
-
 	var rincianKwitansiRepository = repository.NewRincianKwitansiRepository(config.DB)
 	var rincianKwitansiService = service.NewRincianKwitansiService(rincianKwitansiRepository)
 	var rincianKwitansiController = controller.NewRincianKwitansiController(rincianKwitansiService)
@@ -98,6 +94,10 @@ func main() {
 	var rincianKwitansiPenerbanganRepository = repository.NewRincianKwitansiPenerbanganRepository(config.DB)
 	var rincianKwitansiPenerbanganService = service.NewRincianKwitansiPenerbanganService(rincianKwitansiPenerbanganRepository)
 	var rincianKwitansiPenerbanganController = controller.NewRincianKwitansiPenerbanganController(rincianKwitansiPenerbanganService)
+
+	var kwitansiRepository = repository.NewKwitansiRepository(config.DB)
+	var kwitansiService = service.NewKwitansiService(kwitansiRepository)
+	var kwitansiController = controller.NewKwitansiController(kwitansiService, rincianKwitansiService, rincianKwitansiPenerbanganService)
 
 	var server = gin.Default()
 
@@ -224,6 +224,7 @@ func main() {
 	server.GET("/kwitansi/search", middleware.CheckAuth, kwitansiController.GetKwitansiBySearch)
 	server.GET("/kwitansi/count/search", middleware.CheckAuth, kwitansiController.CountDataBySearch)
 	server.GET("/kwitansi/realisasi", middleware.CheckAuth, kwitansiController.SumTotalBayar)
+	server.GET("/kwitansi/laporan", middleware.CheckAuth, kwitansiController.GenerateLaporan)
 	server.POST("/kwitansi", middleware.CheckAuth, kwitansiController.CreateKwitansi)
 	server.PATCH("/kwitansi/:id", middleware.CheckAuth, kwitansiController.UpdateKwitansi)
 	server.PATCH("/kwitansi/totalbayar/:id", middleware.CheckAuth, kwitansiController.UpdateTotalBayarKwitansi)

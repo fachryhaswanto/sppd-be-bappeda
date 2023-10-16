@@ -230,3 +230,49 @@ type RincianKwitansiPenerbanganResponse struct {
 	NomorTiket   string           `json:"nomorTiket"`
 	KodeBooking  string           `json:"kodeBooking"`
 }
+
+// ========================= LAPORAN RESPONSE ===================================
+
+type RincianKwitansiPenerbangan struct {
+	Id           string `json:"id"`
+	KwitansiId   int    `json:"kwitansiId"`
+	NamaMaskapai string `json:"namaMaskapai"`
+	NomorTiket   string `json:"nomorTiket"`
+	KodeBooking  string `json:"kodeBooking"`
+}
+
+type RincianKwitansi struct {
+	Id         string `json:"id"`
+	KwitansiId int    `json:"kwitansiId"`
+	Jenis      string `json:"jenis"`
+	HasilBayar string `json:"hasilBayar"`
+}
+
+type LaporanResponse struct {
+	Id                               int                          `json:"id"`
+	Nomor                            string                       `json:"nomor"`
+	Nip                              string                       `json:"nip"`
+	NamaPegawai                      string                       `json:"namaPegawai"`
+	NamaKegiatan                     string                       `json:"namaKegiatan"`
+	NomorSpt                         string                       `json:"nomorSpt"`
+	TanggalSpt                       string                       `json:"tanggalSpt"`
+	NomorSppd                        string                       `json:"nomorSppd"`
+	TanggalSppd                      string                       `json:"tanggalSppd"`
+	KeperluanSpt                     string                       `json:"keperluanSpt"`
+	TempatTujuan                     string                       `json:"tempatTujuan"`
+	LamaPerjalanan                   string                       `json:"lamaPerjalanan"`
+	TanggalBerangkat                 string                       `json:"tanggalBerangkat"`
+	TanggalKembali                   string                       `json:"tanggalKembali"`
+	NomorKwitansi                    string                       `json:"nomorKwitansi"`
+	TanggalBayar                     string                       `json:"tanggalBayar"`
+	Keperluan                        string                       `json:"keperluan"`
+	TotalBayar                       string                       `json:"totalBayar"`
+	Tahun                            string                       `json:"tahun"`
+	SumTotalBayar                    string                       `json:"sumTotalBayar"`
+	RincianKwitansiUangHarian        []RincianKwitansi            `json:"rincianKwitansiUangHarian"`
+	RincianKwitansiUangRepresentatif []RincianKwitansi            `json:"rincianKwitansiUangRepresentatif"`
+	RincianKwitansiBiayaHotel        []RincianKwitansi            `json:"rincianKwitansiBiayaHotel"`
+	RincianKwitansiBiayaTiket        []RincianKwitansi            `json:"rincianKwitansiBiayaTiket"`
+	RincianKwitansiTransportBandara  []RincianKwitansi            `json:"rincianKwitansiTransportBandara"`
+	RincianKwitansiPenerbangan       []RincianKwitansiPenerbangan `json:"rincianKwitansiPenerbangan"`
+}

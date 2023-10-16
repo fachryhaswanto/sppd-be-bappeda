@@ -869,3 +869,25 @@ func ConvertToRincianKwitansiPenerbanganResponse(r model.RincianKwitansiPenerban
 		KodeBooking:  r.KodeBooking,
 	}
 }
+
+func ConvertToLaporanResponse(k model.Kwitansi) responses.LaporanResponse {
+	return responses.LaporanResponse{
+		Id:               k.Id,
+		Nip:              k.Pegawai.Nip,
+		NamaPegawai:      k.Pegawai.Nama,
+		NamaKegiatan:     k.Sppd.Spt.SubKegiatan.Kegiatan.NamaKegiatan,
+		NomorSpt:         k.Sppd.Spt.Nomor_Spt,
+		TanggalSpt:       k.Sppd.Spt.Tanggal_Spt,
+		NomorSppd:        k.Sppd.Nomor_Sppd,
+		TanggalSppd:      k.Sppd.Tanggal_Sppd,
+		KeperluanSpt:     k.Sppd.Spt.Keperluan,
+		TempatTujuan:     k.Sppd.Tempat_Tujuan,
+		LamaPerjalanan:   k.Sppd.Spt.Lama_Perjalanan,
+		TanggalBerangkat: k.Sppd.Spt.Tanggal_Berangkat,
+		TanggalKembali:   k.Sppd.Spt.Tanggal_Kembali,
+		NomorKwitansi:    k.NomorKwitansi,
+		TanggalBayar:     k.TanggalBayar,
+		Keperluan:        k.Keperluan,
+		Tahun:            k.Tahun,
+	}
+}
